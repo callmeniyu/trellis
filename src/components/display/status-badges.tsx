@@ -2,9 +2,7 @@ import type { ReactNode } from 'react'
 import type { BadgeTone } from '../ui/Badge'
 import { Badge } from '../ui/Badge'
 import type { InvoiceStatus } from '@/models/Invoice'
-import {
-  INVOICE_STATUSES,
-} from '@/models/Invoice'
+import { INVOICE_STATUSES } from '@/models/Invoice'
 import {
   ORDER_PAYMENT_STATUSES,
   ORDER_STATUSES,
@@ -16,10 +14,7 @@ import {
   type ProductCategory,
   type ProductStatus,
 } from '@/models/Product'
-import {
-  PROJECT_STATUSES,
-  type ProjectStatus,
-} from '@/models/Project'
+import { PROJECT_STATUSES, type ProjectStatus } from '@/models/Project'
 import type { UserRole, UserStatus } from '@/models/User'
 
 /**

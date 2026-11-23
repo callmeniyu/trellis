@@ -8,7 +8,7 @@ afterEach(() => {
   cleanup()
 })
 
-// jsdom lacks matchMedia; components like ThemeProvider rely on it.
+// jsdom lacks matchMedia stub
 if (typeof window.matchMedia !== 'function') {
   window.matchMedia = ((query: string) => ({
     matches: false,

@@ -1,13 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import {
-  FolderKanban,
-  MoreHorizontal,
-  Pencil,
-  Plus,
-  Trash2,
-} from 'lucide-react'
+import { FolderKanban, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react'
 import type { Project, ProjectStatus } from '@/models/Project'
 import { PROJECT_STATUSES } from '@/models/Project'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -41,8 +35,7 @@ const STATUS_FILTER_OPTIONS = [
   { value: 'all', label: 'All statuses' },
   ...PROJECT_STATUSES.map((status) => ({
     value: status,
-    label:
-      status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' '),
+    label: status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' '),
   })),
 ]
 

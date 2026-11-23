@@ -10,8 +10,8 @@ import { getAuthUserId, jsonError, latency, unauthorized } from '../utils'
  * can sign in as different roles.
  */
 const DEMO_ACCOUNTS = [
-  { email: 'admin@vital.dev', password: 'admin123' },
-  { email: 'manager@vital.dev', password: 'manager123' },
+  { email: 'admin@trellis.demo', password: 'TrellisDemo123' },
+  { email: 'manager@trellis.demo', password: 'manager123' },
 ]
 
 const INVALID_CREDENTIALS = () =>
@@ -60,6 +60,7 @@ export const authHandlers = [
       target: 'the workspace',
       createdAt: new Date().toISOString(),
     })
+    db.save()
 
     return HttpResponse.json({ user, token })
   }),
@@ -102,6 +103,7 @@ export const authHandlers = [
     user.name = parsed.data.name
     user.email = parsed.data.email
     user.updatedAt = new Date().toISOString()
+    db.save()
 
     return HttpResponse.json({ user: user satisfies AuthUser })
   }),

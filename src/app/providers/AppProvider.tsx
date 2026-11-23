@@ -3,15 +3,13 @@ import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-qu
 import { ApiError } from '@/services/api/errors'
 import { ToastProvider } from '@/components/feedback/ToastProvider'
 import { AuthProvider } from './AuthProvider'
-import { ThemeProvider } from './ThemeProvider'
 
 /**
- * Composes every global provider:
+ * Composes global providers:
  *
  *   QueryClient (server state)
  *     └── Toast
- *           └── Theme
- *                 └── Auth
+ *           └── Auth
  */
 export function AppProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -43,14 +41,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>{children}</AuthProvider>
       </ToastProvider>
     </QueryClientProvider>
   )
 }
 
 function handleQueryError(): void {
-  // Global query error handler — template mode operates without auth redirects.
+  // Global query error handler.
 }

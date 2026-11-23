@@ -1,5 +1,11 @@
 import { Link } from 'react-router-dom'
-import { Package, Plus, ShoppingCart, UserPlus } from 'lucide-react'
+import {
+  FolderPlus,
+  PackagePlus,
+  ReceiptText,
+  ShoppingCart,
+  UserPlus,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 interface QuickAction {
@@ -10,9 +16,10 @@ interface QuickAction {
 
 const ACTIONS: QuickAction[] = [
   { label: 'Add user', to: '/dashboard/users?create=1', icon: UserPlus },
-  { label: 'New product', to: '/dashboard/products?create=1', icon: Plus },
+  { label: 'New product', to: '/dashboard/products?create=1', icon: PackagePlus },
+  { label: 'New project', to: '/dashboard/projects?create=1', icon: FolderPlus },
   { label: 'View orders', to: '/dashboard/orders', icon: ShoppingCart },
-  { label: 'Inventory', to: '/dashboard/products', icon: Package },
+  { label: 'Invoices', to: '/dashboard/invoices', icon: ReceiptText },
 ]
 
 /** Shortcut tiles for the most common admin tasks. */

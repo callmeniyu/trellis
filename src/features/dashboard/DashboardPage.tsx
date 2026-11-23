@@ -1,428 +1,372 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { ArrowRight } from 'lucide-react'
 import { queryKeys } from '@/lib/query-keys'
-import { formatCurrency, formatCompact } from '@/lib/format'
+import { formatCurrency, formatDate, formatNumber } from '@/lib/format'
 import { PageHeader } from '@/components/layout/PageHeader'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/Card'
 import { ErrorState } from '@/components/ui/Feedback'
-import { Skeleton } from '@/components/ui/Skeleton'
 import { Tabs } from '@/components/ui/Tabs'
-import { GroupedBarChart, zipToGrouped } from '@/components/charts/GroupedBarChart'
-import { DonutChart } from '@/components/charts/DonutChart'
+import { AreaChart, BarChart, DonutChart, type DonutSegment } from '@/components/charts'
+import { TableRoot, THead, Td, Th, Tr } from '@/components/ui/Table'
+import { OrderStatusBadge, PaymentStatusBadge } from '@/components/display/status-badges'
 import { dashboardService } from './dashboard.service'
 import { KpiCard, KpiCardSkeleton } from './components/KpiCard'
 import { ActivityFeed } from './components/ActivityFeed'
-import { ProgramCard } from './components/ProgramCard'
-import { CalendarWidget } from './components/CalendarWidget'
-import { ScheduleSection } from './components/ScheduleSection'
-import { MessagesPanel } from './components/MessagesPanel'
-import { StudentList } from './components/StudentList'
-import { StackedChildrenChart } from './components/StackedChildrenChart'
+import { QuickActions } from './components/QuickActions'
 
-const REVENUE_PERIOD_TABS = [
-  { value: '1h', label: '1st Biannually' },
-  { value: '2h', label: '2nd Biannually' },
+const METRIC_TABS = [
+  { value: 'revenue', label: 'Monthly Revenue' },
+  { value: 'orders', label: 'Daily Orders' },
 ]
 
-/**
- * Dashboard overview with education-focused layout: KPI sparklines, program
- * cards, stacked enrollment chart, calendar, schedule, messages, student list.
- */
+const DONUT_COLORS = [
+  'var(--chart-1)',
+  'var(--chart-2)',
+  'var(--chart-3)',
+  'var(--chart-4)',
+  'var(--chart-5)',
+  'var(--muted-foreground)',
+]
+
 export function DashboardPage() {
+  const [metricTab, setMetricTab] = useState<'revenue' | 'orders'>('revenue')
+
+  const overview = useQuery({
+    queryKey: queryKeys.dashboard.overview,
+    queryFn: dashboardService.getOverview,
+  })
+
+  const activity = useQuery({
+    queryKey: queryKeys.dashboard.activity,
+    queryFn: () => dashboardService.getActivity(8),
+  })
+
   return (
     <>
-      <PageHeader title="Dashboard" />
-      <div className="page-section">
-        <KpiSection />
-        <div className="dashboard-layout-3col">
-          <div className="dashboard-col-main">
-            <div className="dashboard-row-2col">
-              <TopProgramsCard />
-              <TotalChildrenCard />
+      <PageHeader
+        title="Dashboard"
+        description="Workspace overview, revenue performance and catalog health."
+      />
+
+      <div
+        className="page-section"
+        style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
+      >
+        {/* Top KPI Cards Grid */}
+        <section aria-label="Key Performance Indicators">
+          {overview.isPending ? (
+            <div className="kpi-grid">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <KpiCardSkeleton key={i} />
+              ))}
             </div>
-            <ProgramsSection />
-            <RevenueCard />
-            <div className="dashboard-row-2col">
-              <MessagesCard />
-              <StudentListCard />
+          ) : overview.isError ? (
+            <ErrorState
+              message="Could not load dashboard metrics."
+              onRetry={() => overview.refetch()}
+            />
+          ) : (
+            <div className="kpi-grid">
+              {overview.data.kpis.map((kpi) => (
+                <KpiCard key={kpi.id} kpi={kpi} />
+              ))}
             </div>
+          )}
+        </section>
+
+        {/* Main 2-Column Responsive Layout */}
+        <div
+          className="dashboard-grid-2col"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
+            gap: 24,
+          }}
+        >
+          {/* Main Area: Charts & Recent Orders */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+            {/* Performance Trend Chart */}
+            <Card>
+              <CardHeader
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 12,
+                }}
+              >
+                <div>
+                  <CardTitle>Performance Trends</CardTitle>
+                  <CardDescription>
+                    {metricTab === 'revenue'
+                      ? 'Historical revenue volume across the last 6 months'
+                      : 'Order volume velocity over the last 14 days'}
+                  </CardDescription>
+                </div>
+                <Tabs
+                  items={METRIC_TABS}
+                  value={metricTab}
+                  onChange={(v) => setMetricTab(v as 'revenue' | 'orders')}
+                  label="Trend metric selector"
+                />
+              </CardHeader>
+              <CardContent style={{ paddingTop: 8 }}>
+                {overview.isPending ? (
+                  <div
+                    style={{
+                      height: 280,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <span className="text-sm text-muted">Loading chart data…</span>
+                  </div>
+                ) : overview.isError ? (
+                  <ErrorState
+                    message="Could not load performance chart."
+                    onRetry={() => overview.refetch()}
+                  />
+                ) : metricTab === 'revenue' ? (
+                  <AreaChart
+                    data={overview.data.revenueByMonth}
+                    height={280}
+                    formatValue={(v) => formatCurrency(v)}
+                    ariaLabel="Monthly revenue chart"
+                  />
+                ) : (
+                  <BarChart
+                    data={overview.data.ordersByDay}
+                    height={280}
+                    formatValue={(v) => formatNumber(v)}
+                    ariaLabel="Daily orders chart"
+                  />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Orders Table */}
+            <Card>
+              <CardHeader
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <div>
+                  <CardTitle>Recent Orders</CardTitle>
+                  <CardDescription>
+                    Latest customer transactions and fulfillment status
+                  </CardDescription>
+                </div>
+                <Link to="/dashboard/orders" className="btn btn--ghost btn--sm">
+                  View all orders
+                  <ArrowRight size={14} aria-hidden="true" />
+                </Link>
+              </CardHeader>
+              <CardContent style={{ padding: 0 }}>
+                {overview.isPending ? (
+                  <p className="text-sm text-muted" style={{ padding: 20 }}>
+                    Loading orders…
+                  </p>
+                ) : overview.isError ? (
+                  <div style={{ padding: 20 }}>
+                    <ErrorState message="Could not load recent orders." />
+                  </div>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <TableRoot caption="Recent customer transactions">
+                      <THead>
+                        <tr>
+                          <Th>Order</Th>
+                          <Th>Customer</Th>
+                          <Th style={{ textAlign: 'right' }}>Total</Th>
+                          <Th>Status</Th>
+                          <Th>Payment</Th>
+                          <Th>Date</Th>
+                          <Th style={{ textAlign: 'right' }}>Action</Th>
+                        </tr>
+                      </THead>
+                      <tbody>
+                        {overview.data.recentOrders.map((order) => (
+                          <Tr key={order.id}>
+                            <Td>
+                              <span className="table__cell-primary">{order.number}</span>
+                            </Td>
+                            <Td>
+                              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <span style={{ fontWeight: 500 }}>
+                                  {order.customerName}
+                                </span>
+                                <span
+                                  className="text-xs text-muted truncate"
+                                  style={{ maxWidth: 160 }}
+                                >
+                                  {order.customerEmail}
+                                </span>
+                              </div>
+                            </Td>
+                            <Td
+                              style={{
+                                textAlign: 'right',
+                                fontVariantNumeric: 'tabular-nums',
+                                fontWeight: 600,
+                              }}
+                            >
+                              {formatCurrency(order.total)}
+                            </Td>
+                            <Td>
+                              <OrderStatusBadge status={order.status} />
+                            </Td>
+                            <Td>
+                              <PaymentStatusBadge status={order.paymentStatus} />
+                            </Td>
+                            <Td className="table__cell-muted">
+                              {formatDate(order.placedAt)}
+                            </Td>
+                            <Td style={{ textAlign: 'right' }}>
+                              <Link
+                                to={`/dashboard/orders/${order.id}`}
+                                className="btn btn--secondary btn--sm"
+                                aria-label={`View order ${order.number}`}
+                              >
+                                View
+                              </Link>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </tbody>
+                    </TableRoot>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
-          <aside className="dashboard-col-sidebar">
-            <CalendarCard />
-            <ScheduleCard />
-            <ActivityCard />
-          </aside>
+
+          {/* Secondary Column: Quick Actions, Catalog Breakdown, Activity Feed */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader>
+                <div>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common admin workflows</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent style={{ paddingTop: 4 }}>
+                <QuickActions />
+              </CardContent>
+            </Card>
+
+            {/* Product Catalog Breakdown */}
+            <Card>
+              <CardHeader>
+                <div>
+                  <CardTitle>Catalog Distribution</CardTitle>
+                  <CardDescription>Active inventory by category</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent style={{ paddingTop: 8 }}>
+                {overview.isPending ? (
+                  <p className="text-sm text-muted">Loading breakdown…</p>
+                ) : overview.isError ? (
+                  <p className="text-sm text-muted">Unavailable</p>
+                ) : (
+                  <CategoryDonutSection categories={overview.data.productCategories} />
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Workspace Activity */}
+            <Card>
+              <CardHeader>
+                <div>
+                  <CardTitle>Workspace Activity</CardTitle>
+                  <CardDescription>Real-time audit log of admin actions</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent style={{ padding: 0 }}>
+                <ActivityFeed events={activity.data} />
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </>
   )
 }
 
-// ---------------------------------------------------------------------------
-// KPI Section
-// ---------------------------------------------------------------------------
-
-function KpiSection() {
-  const overview = useQuery({
-    queryKey: queryKeys.dashboard.overview,
-    queryFn: dashboardService.getOverview,
-  })
-
-  if (overview.isPending) {
-    return (
-      <div className="kpi-grid kpi-grid--3">
-        {[1, 2, 3].map((i) => <KpiCardSkeleton key={i} />)}
-      </div>
-    )
-  }
-
-  if (overview.isError) {
-    return (
-      <ErrorState
-        message="Could not load dashboard metrics."
-        onRetry={() => overview.refetch()}
-      />
-    )
-  }
-
-  return (
-    <div className="kpi-grid kpi-grid--3">
-      {overview.data.kpis.map((kpi) => (
-        <KpiCard key={kpi.id} kpi={kpi} />
-      ))}
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Top Programs — Donut chart
-// ---------------------------------------------------------------------------
-
-function TopProgramsCard() {
-  const overview = useQuery({
-    queryKey: queryKeys.dashboard.overview,
-    queryFn: dashboardService.getOverview,
-  })
-
-  const categories = overview.data?.programCategories ?? []
-  const totalPrograms = overview.data?.totalPrograms ?? 0
-
-  const CHART_COLORS = ['var(--chart-1)', 'var(--chart-2)', 'var(--chart-3)']
-  const segments = categories.map((c, i) => ({
-    label: c.label,
-    value: c.value,
-    color: CHART_COLORS[i % CHART_COLORS.length],
+function CategoryDonutSection({
+  categories,
+}: {
+  categories: Array<{ label: string; value: number }>
+}) {
+  const total = categories.reduce((sum, c) => sum + c.value, 0)
+  const segments: DonutSegment[] = categories.map((cat, idx) => ({
+    label: cat.label,
+    value: cat.value,
+    color: DONUT_COLORS[idx % DONUT_COLORS.length],
   }))
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Top Programs</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {overview.isPending ? (
-          <Skeleton style={{ height: 180 }} />
-        ) : overview.isError ? (
-          <ErrorState compact message="Failed to load program data." />
-        ) : (
-          <>
-            <div className="donut-layout">
-              <div className="donut-center-wrap">
-                <DonutChart
-                  segments={segments}
-                  size={140}
-                  thickness={22}
-                  ariaLabel="Program enrollment by category"
+    <div
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}
+    >
+      <DonutChart
+        segments={segments}
+        size={170}
+        thickness={24}
+        ariaLabel="Product catalog category distribution"
+      />
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {categories.map((cat, idx) => {
+          const color = DONUT_COLORS[idx % DONUT_COLORS.length]
+          const pct = total > 0 ? Math.round((cat.value / total) * 100) : 0
+          return (
+            <div
+              key={cat.label}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '0.82rem',
+              }}
+            >
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span
+                  style={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 2,
+                    backgroundColor: color,
+                    flexShrink: 0,
+                  }}
+                  aria-hidden="true"
                 />
-                <div className="donut-center-label">
-                  <span className="donut-center-label__title">Total<br />Programs</span>
-                  <span className="donut-center-label__value">{totalPrograms}</span>
-                </div>
-              </div>
+                <span style={{ color: 'var(--foreground)' }}>{cat.label}</span>
+              </span>
+              <span
+                style={{
+                  color: 'var(--muted-foreground)',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {cat.value} ({pct}%)
+              </span>
             </div>
-            <ul className="legend-list" style={{ marginTop: 12 }}>
-              {segments.map((s) => {
-                const share =
-                  totalPrograms > 0 ? Math.round((s.value / totalPrograms) * 100) : 0
-                return (
-                  <li key={s.label} className="legend-list__item">
-                    <span className="legend-swatch" style={{ background: s.color }} />
-                    {s.label}
-                    <span className="legend-list__share">{share}%</span>
-                  </li>
-                )
-              })}
-            </ul>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          )
+        })}
+      </div>
+    </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Total Children — Stacked area chart
-// ---------------------------------------------------------------------------
-
-function TotalChildrenCard() {
-  const overview = useQuery({
-    queryKey: queryKeys.dashboard.overview,
-    queryFn: dashboardService.getOverview,
-  })
-
-  return (
-    <Card>
-      <CardHeader>
-        <div>
-          <CardTitle>Total Children</CardTitle>
-          <CardDescription>This Month</CardDescription>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {overview.isError ? (
-          <ErrorState compact message="Failed to load enrollment data." />
-        ) : (
-          <StackedChildrenChart
-            data={overview.data?.childrenByMonth ?? []}
-            totalChildren={overview.data?.totalChildren ?? 0}
-            height={200}
-          />
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Programs Section
-// ---------------------------------------------------------------------------
-
-function ProgramsSection() {
-  const programs = useQuery({
-    queryKey: queryKeys.dashboard.programs,
-    queryFn: dashboardService.getPrograms,
-  })
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Programs</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {programs.isPending ? (
-          <div className="program-cards-grid">
-            {[1, 2].map((i) => (
-              <div key={i} className="program-card program-card--skeleton">
-                <Skeleton style={{ height: 140 }} />
-                <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Skeleton style={{ width: '70%' }} />
-                  <Skeleton style={{ width: '50%' }} />
-                  <Skeleton style={{ width: '90%' }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : programs.isError ? (
-          <ErrorState compact message="Failed to load programs." onRetry={() => programs.refetch()} />
-        ) : (
-          <div className="program-cards-grid">
-            {programs.data.slice(0, 2).map((prog) => (
-              <ProgramCard key={prog.id} program={prog} />
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Revenue Card — Bar chart with period toggle
-// ---------------------------------------------------------------------------
-
-function RevenueCard() {
-  const [period, setPeriod] = useState<'1h' | '2h'>('1h')
-
-  const overview = useQuery({
-    queryKey: queryKeys.dashboard.overview,
-    queryFn: dashboardService.getOverview,
-  })
-
-  const allRevenue = overview.data?.revenueByMonth ?? []
-  const allTuition = overview.data?.tuitionByMonth ?? []
-  // 12 months: indices 0-5 = first half, 6-11 = second half
-  const revenueSeries = period === '1h' ? allRevenue.slice(0, 6) : allRevenue.slice(6)
-  const tuitionSeries = period === '1h' ? allTuition.slice(0, 6) : allTuition.slice(6)
-  const grouped = zipToGrouped(revenueSeries, tuitionSeries)
-  const totalRevenue = allRevenue.reduce((sum, p) => sum + p.value, 0)
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="dash-table-title-row">
-          <div>
-            <CardTitle>Revenue</CardTitle>
-            <p className="kpi-card__value" style={{ marginTop: 2 }}>
-              {formatCurrency(totalRevenue)}
-              <span className="kpi-card__label" style={{ marginLeft: 4 }}>in Total</span>
-            </p>
-          </div>
-          <Tabs
-            items={REVENUE_PERIOD_TABS}
-            value={period}
-            onChange={(v) => setPeriod(v as '1h' | '2h')}
-            label="Revenue period"
-          />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {overview.isPending ? (
-          <Skeleton style={{ height: 200 }} />
-        ) : overview.isError ? (
-          <ErrorState compact message="Failed to load revenue data." onRetry={() => overview.refetch()} />
-        ) : (
-          <>
-            <GroupedBarChart
-              data={grouped}
-              height={200}
-              formatValue={(v) => formatCompact(v)}
-              ariaLabel={`Monthly revenue vs tuition — ${period === '1h' ? 'first' : 'second'} half of year`}
-            />
-            <ul className="legend-list" style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
-              <li className="legend-list__item">
-                <span className="legend-swatch" style={{ background: 'var(--chart-1)' }} />
-                Revenue
-              </li>
-              <li className="legend-list__item">
-                <span className="legend-swatch" style={{ background: 'var(--chart-2)' }} />
-                Tuition
-              </li>
-            </ul>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Messages Card
-// ---------------------------------------------------------------------------
-
-function MessagesCard() {
-  const messages = useQuery({
-    queryKey: queryKeys.dashboard.messages,
-    queryFn: dashboardService.getMessages,
-  })
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Messages</CardTitle>
-      </CardHeader>
-      <CardContent style={{ padding: 0 }}>
-        <MessagesPanel messages={messages.data} />
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Student List Card
-// ---------------------------------------------------------------------------
-
-function StudentListCard() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Student List</CardTitle>
-      </CardHeader>
-      <CardContent style={{ padding: 0 }}>
-        <StudentList />
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Right Sidebar: Calendar
-// ---------------------------------------------------------------------------
-
-function CalendarCard() {
-  const schedule = useQuery({
-    queryKey: queryKeys.dashboard.schedule,
-    queryFn: dashboardService.getSchedule,
-  })
-
-  return (
-    <Card>
-      <CardContent style={{ padding: '16px' }}>
-        <CalendarWidget events={schedule.data} />
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Right Sidebar: Schedule
-// ---------------------------------------------------------------------------
-
-function ScheduleCard() {
-  const schedule = useQuery({
-    queryKey: queryKeys.dashboard.schedule,
-    queryFn: dashboardService.getSchedule,
-  })
-
-  return (
-    <Card>
-      <CardHeader>
-        <div className="dash-table-title-row">
-          <CardTitle>Schedule</CardTitle>
-          <span className="text-xs text-muted">This Week</span>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {schedule.isError ? (
-          <ErrorState compact message="Failed to load schedule." onRetry={() => schedule.refetch()} />
-        ) : (
-          <ScheduleSection events={schedule.data} />
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// Right Sidebar: Activity Feed
-// ---------------------------------------------------------------------------
-
-function ActivityCard() {
-  const activity = useQuery({
-    queryKey: queryKeys.dashboard.activity,
-    queryFn: () => dashboardService.getActivity(6),
-  })
-
-  return (
-    <Card>
-      <CardHeader>
-        <div>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>Latest changes across the workspace</CardDescription>
-        </div>
-      </CardHeader>
-      {activity.isError ? (
-        <CardContent>
-          <ErrorState
-            compact
-            message="Failed to load activity."
-            onRetry={() => activity.refetch()}
-          />
-        </CardContent>
-      ) : (
-        <ActivityFeed events={activity.data} />
-      )}
-    </Card>
-  )
-}
-
-

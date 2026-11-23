@@ -20,6 +20,15 @@ export function KpiCardSkeleton() {
   )
 }
 
+const KPI_COLORS: Record<string, string> = {
+  revenue: 'var(--chart-1)',
+  orders: 'var(--chart-2)',
+  users: 'var(--chart-3)',
+  products: 'var(--chart-4)',
+  projects: 'var(--chart-5)',
+  invoices: 'var(--chart-2)',
+}
+
 /** Single dashboard metric tile with period-over-period change and a mini sparkline. */
 export function KpiCard({ kpi }: { kpi: Kpi }) {
   const formatted =
@@ -32,6 +41,7 @@ export function KpiCard({ kpi }: { kpi: Kpi }) {
   const trendUp = kpi.changePct > 0
   const trendDown = kpi.changePct < 0
   const TrendIcon = trendUp ? TrendingUp : trendDown ? TrendingDown : Minus
+  const colorVar = KPI_COLORS[kpi.id] ?? 'var(--chart-1)'
 
   return (
     <article className="card kpi-card kpi-card--with-sparkline">
@@ -45,19 +55,19 @@ export function KpiCard({ kpi }: { kpi: Kpi }) {
             <TrendIcon size={13} aria-hidden="true" />
             <span aria-hidden="true">
               {trendUp ? '+' : ''}
-              {kpi.changePct.toFixed(2)}%
+              {kpi.changePct.toFixed(1)}%
             </span>
             <span className="visually-hidden">
               {trendUp ? 'up' : trendDown ? 'down' : 'unchanged by'}{' '}
-              {Math.abs(kpi.changePct).toFixed(2)} percent versus last period
+              {Math.abs(kpi.changePct).toFixed(1)} percent versus previous period
             </span>
           </span>
         </div>
-        <p className="kpi-card__date">Data per 1 June 2026</p>
+        <p className="kpi-card__date">vs. previous period</p>
       </div>
-      {kpi.series.length >= 2 && (
+      {kpi.series && kpi.series.length >= 2 && (
         <div className="kpi-card__sparkline" aria-hidden="true">
-          <Sparkline data={kpi.series} colorVar={kpi.id === 'teachers' ? 'var(--chart-2)' : 'var(--chart-1)'} />
+          <Sparkline data={kpi.series} colorVar={colorVar} />
         </div>
       )}
     </article>
@@ -65,7 +75,13 @@ export function KpiCard({ kpi }: { kpi: Kpi }) {
 }
 
 /** Minimal inline area chart — no axes, no labels, no gridlines. */
-function Sparkline({ data, colorVar = 'var(--chart-1)' }: { data: SeriesPoint[]; colorVar?: string }) {
+function Sparkline({
+  data,
+  colorVar = 'var(--chart-1)',
+}: {
+  data: SeriesPoint[]
+  colorVar?: string
+}) {
   const width = 100
   const height = 52
   const padding = { top: 4, bottom: 4, left: 0, right: 0 }
@@ -75,10 +91,8 @@ function Sparkline({ data, colorVar = 'var(--chart-1)' }: { data: SeriesPoint[];
   const min = Math.min(...data.map((d) => d.value), 0)
   const range = Math.max(max - min, 1)
 
-  const x = (i: number) =>
-    padding.left + (i / (data.length - 1)) * innerWidth
-  const y = (v: number) =>
-    padding.top + innerHeight - ((v - min) / range) * innerHeight
+  const x = (i: number) => padding.left + (i / Math.max(data.length - 1, 1)) * innerWidth
+  const y = (v: number) => padding.top + innerHeight - ((v - min) / range) * innerHeight
 
   const linePath = data
     .map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`)
@@ -109,7 +123,7 @@ function Sparkline({ data, colorVar = 'var(--chart-1)' }: { data: SeriesPoint[];
         d={linePath}
         fill="none"
         stroke={colorVar}
-        strokeWidth={1.5}
+        strokeWidth={1.8}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

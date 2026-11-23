@@ -19,7 +19,7 @@ describe('projects service (against mock API)', () => {
   })
 
   it('creates, updates and deletes a project', async () => {
-    await authService.login({ email: 'admin@vital.dev', password: 'admin123' })
+    await authService.login({ email: 'admin@trellis.demo', password: 'TrellisDemo123' })
 
     const created = await projectService.create({
       name: 'Test Initiative',
@@ -44,7 +44,7 @@ describe('projects service (against mock API)', () => {
   })
 
   it('surfaces server-side field errors on duplicate name per client', async () => {
-    await authService.login({ email: 'admin@vital.dev', password: 'admin123' })
+    await authService.login({ email: 'admin@trellis.demo', password: 'TrellisDemo123' })
 
     const existing = (await projectService.list({ page: 1, pageSize: 1 })).data[0]
 
@@ -63,7 +63,7 @@ describe('projects service (against mock API)', () => {
 
 describe('invoices service (against mock API)', () => {
   it('lists invoices and applies the paid transition', async () => {
-    await authService.login({ email: 'admin@vital.dev', password: 'admin123' })
+    await authService.login({ email: 'admin@trellis.demo', password: 'TrellisDemo123' })
 
     const list = await invoiceService.list({ page: 1, pageSize: 10 })
     expect(list.data).toHaveLength(10)
@@ -81,7 +81,7 @@ describe('invoices service (against mock API)', () => {
   })
 
   it('rejects invalid status payloads', async () => {
-    await authService.login({ email: 'admin@vital.dev', password: 'admin123' })
+    await authService.login({ email: 'admin@trellis.demo', password: 'TrellisDemo123' })
 
     await expect(
       // @ts-expect-error exercising runtime validation of a bad payload

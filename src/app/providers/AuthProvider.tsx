@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 const DEFAULT_USER: AuthUser = {
   id: 'usr_0001',
   name: 'Alex Morgan',
-  email: 'admin@vital.dev',
+  email: 'admin@trellis.demo',
   role: 'admin',
   status: 'active',
   lastLoginAt: new Date().toISOString(),

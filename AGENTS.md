@@ -1,4 +1,4 @@
-# AGENTS.md — Vantage Admin
+# AGENTS.md — Trellis
 
 **Purpose of this document:** a complete handoff for any AI agent (or human) continuing work on this repository. It describes what the project is, how it is built, every convention that must be followed, where everything lives, and the exact current state. Read it fully before changing anything.
 
@@ -6,7 +6,7 @@
 
 ## 1. What this project is
 
-**Vantage Admin** is an open-source React admin template. It ships with a fully working **mock backend** so every page functions immediately after `npm install && npm run dev`. The intended user journey: clone → run → explore → replace `src/data/mock-server/` with a real backend (see README → "Replacing the Mock Backend").
+**Trellis** is a modern SaaS administration platform. It ships with a fully working **mock backend** and browser storage persistence so every page functions immediately after `npm install && npm run dev`. The intended user journey: clone → run → explore → replace `src/data/mock-server/` with a real backend (see README → "Replacing the Mock Backend").
 
 - Human-facing docs live in `README.md` and `LICENSE` (MIT).
 - This file is the engineering source of truth.
@@ -59,10 +59,10 @@ If the dev server behaves strangely after files were added/renamed (e.g. "Failed
 
 ### Demo credentials (mock API only)
 
-| Email                 | Password     | Role    |
-| --------------------- | ------------ | ------- |
-| `admin@vantage.dev`   | `admin123`   | admin   |
-| `manager@vantage.dev` | `manager123` | manager |
+| Email                  | Password         | Role    |
+| ---------------------- | ---------------- | ------- |
+| `admin@trellis.demo`   | `TrellisDemo123` | admin   |
+| `manager@trellis.demo` | `manager123`     | manager |
 
 Other seeded users accept **any password ≥ 8 chars**. Suspended users get HTTP 403 on login. Deleting your own account returns HTTP 409 conflict.
 

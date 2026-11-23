@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { NAV_SECTIONS } from '@/config/navigation'
 import { cn } from '@/lib/cn'
+import { TrellisLogo, TrellisMark } from '@/components/ui/TrellisLogo'
 
 export interface SidebarProps {
   collapsed: boolean
@@ -31,14 +32,10 @@ export function Sidebar({
         aria-label="Main navigation"
       >
         <div className="sidebar__header">
-          <span className="sidebar__mark" aria-hidden="true">
-            V
-          </span>
-          {!collapsed && (
-            <span className="sidebar__text-logo" aria-label="Vital Admin">
-              <span className="sidebar__text-logo-brand">Vital</span>{' '}
-              <span className="sidebar__text-logo-sub">Admin</span>
-            </span>
+          {collapsed ? (
+            <TrellisMark size={32} />
+          ) : (
+            <TrellisLogo size={30} subtitle="Admin" />
           )}
         </div>
 

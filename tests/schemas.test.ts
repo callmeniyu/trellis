@@ -30,7 +30,7 @@ describe('updateProfileSchema', () => {
 
     const ok = updateProfileSchema.safeParse({
       name: '  Ada Lovelace ',
-      email: 'ada@vantage.dev',
+      email: 'ada@trellis.demo',
     })
     expect(ok.success).toBe(true)
     if (ok.success) expect(ok.data.name).toBe('Ada Lovelace')
@@ -41,7 +41,7 @@ describe('createUserSchema', () => {
   it('defaults nothing — status stays optional', () => {
     const parsed = createUserSchema.parse({
       name: 'Grace Hopper',
-      email: 'grace@vantage.dev',
+      email: 'grace@trellis.demo',
       role: 'member',
     })
     expect(parsed.status).toBeUndefined()
@@ -50,7 +50,7 @@ describe('createUserSchema', () => {
   it('rejects unknown roles', () => {
     const result = createUserSchema.safeParse({
       name: 'Grace Hopper',
-      email: 'grace@vantage.dev',
+      email: 'grace@trellis.demo',
       role: 'superadmin',
     })
     expect(result.success).toBe(false)

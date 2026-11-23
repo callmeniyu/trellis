@@ -21,7 +21,7 @@ describe('users service (against mock API)', () => {
   })
 
   it('surfaces server-side field errors on duplicate emails', async () => {
-    await authService.login({ email: 'admin@vital.dev', password: 'admin123' })
+    await authService.login({ email: 'admin@trellis.demo', password: 'TrellisDemo123' })
 
     const existing = await userService.list({ page: 1, pageSize: 1 })
     const email = existing.data[0].email

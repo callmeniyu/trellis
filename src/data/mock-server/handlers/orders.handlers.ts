@@ -86,6 +86,7 @@ export const ordersHandlers = [
     }
 
     Object.assign(order, parsed.data, { updatedAt: new Date().toISOString() })
+    db.save()
 
     return HttpResponse.json({ data: order })
   }),

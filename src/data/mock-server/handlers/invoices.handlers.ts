@@ -45,6 +45,18 @@ export const invoicesHandlers = [
     return HttpResponse.json(paginate(items, query))
   }),
 
+  // GET /api/invoices/:id — detail
+  http.get('*/api/invoices/:id', async ({ request, params }) => {
+    await latency(120, 250)
+    if (!getAuthUserId(request)) return unauthorized()
+
+    const { id } = params as { id: string }
+    const invoice = db.invoices.find((i) => i.id === id)
+    if (!invoice) return notFound('invoice')
+
+    return HttpResponse.json({ data: invoice })
+  }),
+
   // PATCH /api/invoices/:id — status transition
   http.patch('*/api/invoices/:id', async ({ request, params }) => {
     await latency(200, 500)
@@ -73,6 +85,7 @@ export const invoicesHandlers = [
       invoice.paidAt = null
     }
     invoice.updatedAt = new Date().toISOString()
+    db.save()
 
     return HttpResponse.json({ data: invoice })
   }),

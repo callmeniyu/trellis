@@ -1,4 +1,4 @@
-# Contributing to Vantage Admin
+# Contributing to Trellis
 
 Thanks for your interest in contributing! This document explains how to set up the project, the standards we hold changes to, and how to get your pull request merged.
 
@@ -52,7 +52,7 @@ If you add a user-facing capability, add tests:
 - Use concise, imperative commit messages: `Add sort indicator to orders table`, not `fixed stuff`.
 - One logical change per PR. Keep diffs reviewable.
 - Link the issue being addressed (`Fixes #12`).
-- Describe *what* changed, *why*, and how to verify it. Screenshots/GIFs for visual changes are appreciated.
+- Describe _what_ changed, _why_, and how to verify it. Screenshots/GIFs for visual changes are appreciated.
 - Update `README.md` / `AGENTS.md` if your change affects documented behavior.
 
 ## Branches & workflow
