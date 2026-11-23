@@ -1,58 +1,39 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vital Admin — Free Open-Source React Admin Template</title>
+    <title>Trellis — Modern SaaS Administration Platform</title>
     <meta
       name="description"
-      content="Vital Admin is a free, open-source React admin template built with TypeScript and Vite — responsive dashboards, dark mode, and a mock API you can swap for any backend."
+      content="Trellis is a modern, frontend-only SaaS administration platform built with React, TypeScript and Vite — responsive dashboards, data-driven analytics, and an in-process mock API."
     />
-    <link rel="canonical" href="https://vital-admin-template.vercel.app/" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f1115" />
+    <link rel="canonical" href="https://trellis-admin.vercel.app/" />
+    <meta name="theme-color" content="#ffffff" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Vital Admin" />
-    <meta property="og:url" content="https://vital-admin-template.vercel.app/" />
-    <meta
-      property="og:title"
-      content="Vital Admin — Free & Open-Source React Admin Template"
-    />
+    <meta property="og:site_name" content="Trellis" />
+    <meta property="og:url" content="https://trellis-admin.vercel.app/" />
+    <meta property="og:title" content="Trellis — Modern SaaS Administration Platform" />
     <meta
       property="og:description"
-      content="A free, open-source React admin template built with TypeScript and Vite. Responsive dashboard pages, dark mode, charts, and a swappable MSW mock API."
+      content="A modern, frontend-only SaaS administration platform built with React, TypeScript and Vite. Responsive dashboard, analytics, users, products, orders, projects, and invoices."
     />
-    <meta
-      property="og:image"
-      content="https://vital-admin-template.vercel.app/preview.png"
-    />
-    <meta
-      property="og:image:alt"
-      content="Vital Admin — Free & Open-Source React Admin Template"
-    />
+    <meta property="og:image" content="https://trellis-admin.vercel.app/preview.png" />
+    <meta property="og:image:alt" content="Trellis SaaS Administration Platform" />
     <meta property="og:image:width" content="1920" />
     <meta property="og:image:height" content="935" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta
-      name="twitter:title"
-      content="Vital Admin — Free & Open-Source React Admin Template"
-    />
+    <meta name="twitter:title" content="Trellis — Modern SaaS Administration Platform" />
     <meta
       name="twitter:description"
-      content="A free, open-source React admin template built with TypeScript and Vite. Responsive dashboards, dark mode, and a swappable mock API."
+      content="A modern, frontend-only SaaS administration platform built with React, TypeScript and Vite. Responsive dashboards, analytics, and an in-process mock API."
     />
-    <meta
-      name="twitter:image"
-      content="https://vital-admin-template.vercel.app/preview.png"
-    />
-    <meta
-      name="twitter:image:alt"
-      content="Vital Admin — Free & Open-Source React Admin Template"
-    />
+    <meta name="twitter:image" content="https://trellis-admin.vercel.app/preview.png" />
+    <meta name="twitter:image:alt" content="Trellis SaaS Administration Platform" />
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
@@ -62,51 +43,25 @@
         "@graph": [
           {
             "@type": "WebSite",
-            "@id": "https://vital-admin-template.vercel.app/#website",
-            "url": "https://vital-admin-template.vercel.app/",
-            "name": "Vital Admin",
-            "description": "Free, open-source React admin template built with TypeScript and Vite.",
-            "inLanguage": "en",
-            "publisher": { "@id": "https://github.com/Miftah-Fentaw" }
+            "@id": "https://trellis-admin.vercel.app/#website",
+            "url": "https://trellis-admin.vercel.app/",
+            "name": "Trellis",
+            "description": "Modern SaaS Administration Platform built with React, TypeScript and Vite.",
+            "inLanguage": "en"
           },
           {
             "@type": "SoftwareApplication",
-            "@id": "https://vital-admin-template.vercel.app/#app",
-            "name": "Vital Admin",
-            "url": "https://vital-admin-template.vercel.app/",
-            "image": "https://vital-admin-template.vercel.app/preview.png",
-            "description": "Free, open-source React admin template built with TypeScript and Vite. Provides a production-oriented foundation for admin dashboards, SaaS applications, CRM systems, analytics platforms, ecommerce dashboards, and internal tools.",
-            "applicationCategory": "DeveloperApplication",
+            "@id": "https://trellis-admin.vercel.app/#app",
+            "name": "Trellis",
+            "url": "https://trellis-admin.vercel.app/",
+            "image": "https://trellis-admin.vercel.app/preview.png",
+            "description": "Modern SaaS administration platform built with React, TypeScript and Vite. Features comprehensive administration dashboards, user management, product catalog, orders, projects, invoices, and analytics.",
+            "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
-            "isAccessibleForFree": true,
-            "license": "https://github.com/Miftah-Fentaw/React-admin-template/blob/main/LICENSE",
-            "author": {
-              "@type": "Person",
-              "name": "Miftah-Fentaw",
-              "url": "https://github.com/Miftah-Fentaw"
-            },
-            "sameAs": ["https://github.com/Miftah-Fentaw/React-admin-template"]
+            "isAccessibleForFree": true
           }
         ]
       }
-    </script>
-
-    <script>
-      // Apply the persisted theme before first paint to avoid a flash of the
-      // wrong color scheme. Mirrors the logic in src/app/providers/ThemeProvider.tsx
-      ;(function () {
-        try {
-          var stored =
-            localStorage.getItem('vital.theme') || localStorage.getItem('vantage.theme')
-          var theme =
-            stored === 'light' || stored === 'dark' || stored === 'system'
-              ? stored
-              : 'light'
-          document.documentElement.dataset.theme = theme === 'system' ? 'light' : theme
-        } catch (e) {
-          document.documentElement.dataset.theme = 'light'
-        }
-      })()
     </script>
   </head>
   <body>

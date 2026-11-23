@@ -24,6 +24,7 @@ export const notificationsHandlers = [
     if (!notification) return notFound('notification')
 
     notification.read = true
+    db.save()
 
     return HttpResponse.json({ data: notification })
   }),
@@ -35,6 +36,7 @@ export const notificationsHandlers = [
     for (const notification of db.notifications) {
       notification.read = true
     }
+    db.save()
 
     return new HttpResponse(null, { status: 204 })
   }),

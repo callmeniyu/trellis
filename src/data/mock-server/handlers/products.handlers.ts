@@ -89,6 +89,7 @@ export const productsHandlers = [
       updatedAt: now,
     }
     db.products.unshift(product)
+    db.save()
 
     return HttpResponse.json({ data: product }, { status: 201 })
   }),
@@ -125,6 +126,7 @@ export const productsHandlers = [
 
     Object.assign(product, parsed.data, { updatedAt: new Date().toISOString() })
     product.price = Math.round(product.price * 100) / 100
+    db.save()
 
     return HttpResponse.json({ data: product })
   }),
@@ -138,6 +140,7 @@ export const productsHandlers = [
     if (index === -1) return notFound('product')
 
     db.products.splice(index, 1)
+    db.save()
 
     return new HttpResponse(null, { status: 204 })
   }),

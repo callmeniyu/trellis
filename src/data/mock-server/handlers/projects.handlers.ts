@@ -1,6 +1,10 @@
 import { http, HttpResponse } from 'msw'
 import type { Project, ProjectStatus } from '@/models/Project'
-import { createProjectSchema, updateProjectSchema, zodFieldErrors } from '@/models/schemas'
+import {
+  createProjectSchema,
+  updateProjectSchema,
+  zodFieldErrors,
+} from '@/models/schemas'
 import { db } from '../db'
 import {
   applySort,
@@ -38,7 +42,9 @@ export const projectsHandlers = [
     if (status && status !== 'all') {
       items = items.filter((p) => p.status === (status as ProjectStatus))
     }
-    items = items.filter((p) => matchesSearch(p, ['name', 'client', 'ownerName'], query.search))
+    items = items.filter((p) =>
+      matchesSearch(p, ['name', 'client', 'ownerName'], query.search),
+    )
     items = applySort(items, query.sortField, query.sortDirection, SORTABLE_FIELDS)
 
     return HttpResponse.json(paginate(items, query))
@@ -84,6 +90,7 @@ export const projectsHandlers = [
       updatedAt: now,
     }
     db.projects.unshift(project)
+    db.save()
 
     return HttpResponse.json({ data: project }, { status: 201 })
   }),
@@ -121,6 +128,7 @@ export const projectsHandlers = [
     }
 
     Object.assign(project, parsed.data, { updatedAt: new Date().toISOString() })
+    db.save()
 
     return HttpResponse.json({ data: project })
   }),
@@ -135,6 +143,7 @@ export const projectsHandlers = [
     if (index === -1) return notFound('project')
 
     db.projects.splice(index, 1)
+    db.save()
 
     return new HttpResponse(null, { status: 204 })
   }),

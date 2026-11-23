@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { MoreHorizontal, ReceiptText } from 'lucide-react'
+import { Eye, MoreHorizontal, ReceiptText } from 'lucide-react'
 import type { Invoice, InvoiceStatus } from '@/models/Invoice'
 import { INVOICE_STATUSES } from '@/models/Invoice'
 import { PageHeader } from '@/components/layout/PageHeader'
@@ -24,6 +25,7 @@ import { InvoiceStatusBadge } from '@/components/display/status-badges'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useToast } from '@/components/feedback/ToastProvider'
 import { useInvoices, useUpdateInvoice } from '../hooks/use-invoices'
+import { InvoiceDetailDialog } from '../components/InvoiceDetailDialog'
 
 const PAGE_SIZE = 10
 
@@ -89,10 +91,19 @@ export function InvoicesPage() {
   }
 
   const invoices = useInvoices(query)
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null)
 
   const transitionStatus = async (invoice: Invoice, to: InvoiceStatus) => {
     try {
-      await updateInvoice.mutateAsync({ id: invoice.id, input: { status: to } })
+      const updated = await updateInvoice.mutateAsync({
+        id: invoice.id,
+        input: { status: to },
+      })
+      setSelectedInvoice((current) =>
+        current && current.id === invoice.id
+          ? { ...current, status: to, paidAt: updated.paidAt }
+          : current,
+      )
       toast.success('Status updated', `${invoice.number} is now ${to}.`)
     } catch (error) {
       toast.error('Update failed', getUserMessage(error))
@@ -219,16 +230,29 @@ export function InvoicesPage() {
                 invoices.data.data.map((invoice) => (
                   <Tr key={invoice.id}>
                     <Td>
-                      <span
-                        className="table__cell-primary truncate"
-                        style={{ maxWidth: 130 }}
+                      <button
+                        type="button"
+                        className="btn-link table__cell-primary truncate"
+                        style={{
+                          maxWidth: 130,
+                          textAlign: 'left',
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          cursor: 'pointer',
+                          color: 'var(--primary)',
+                          fontWeight: 600,
+                        }}
+                        onClick={() => setSelectedInvoice(invoice)}
                       >
                         {invoice.number}
-                      </span>
+                      </button>
                     </Td>
                     <Td>{invoice.customerName}</Td>
                     <Td className="table__cell-muted">{invoice.customerEmail}</Td>
-                    <Td style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                    <Td
+                      style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}
+                    >
                       {formatCurrency(invoice.amount)}
                     </Td>
                     <Td>
@@ -240,10 +264,15 @@ export function InvoicesPage() {
                     </Td>
                     <Td>
                       <div className="table__cell-actions">
-                        {NEXT_STATUS_ACTIONS[invoice.status].length > 0 ? (
-                          <DropdownMenu
-                            label={`Actions for ${invoice.number}`}
-                            items={NEXT_STATUS_ACTIONS[invoice.status].map(
+                        <DropdownMenu
+                          label={`Actions for ${invoice.number}`}
+                          items={[
+                            {
+                              label: 'View details',
+                              icon: <Eye size={15} aria-hidden="true" />,
+                              onSelect: () => setSelectedInvoice(invoice),
+                            },
+                            ...NEXT_STATUS_ACTIONS[invoice.status].map(
                               ({ to, label }) => ({
                                 label,
                                 disabled: updateInvoice.isPending,
@@ -251,21 +280,19 @@ export function InvoicesPage() {
                                   void transitionStatus(invoice, to)
                                 },
                               }),
-                            )}
-                            trigger={(triggerProps) => (
-                              <button
-                                type="button"
-                                className="icon-btn"
-                                aria-label={`Actions for ${invoice.number}`}
-                                {...triggerProps}
-                              >
-                                <MoreHorizontal size={16} aria-hidden="true" />
-                              </button>
-                            )}
-                          />
-                        ) : (
-                          <span className="text-xs text-muted">—</span>
-                        )}
+                            ),
+                          ]}
+                          trigger={(triggerProps) => (
+                            <button
+                              type="button"
+                              className="icon-btn"
+                              aria-label={`Actions for ${invoice.number}`}
+                              {...triggerProps}
+                            >
+                              <MoreHorizontal size={16} aria-hidden="true" />
+                            </button>
+                          )}
+                        />
                       </div>
                     </Td>
                   </Tr>
@@ -287,6 +314,14 @@ export function InvoicesPage() {
           )}
         </>
       )}
+
+      <InvoiceDetailDialog
+        invoice={selectedInvoice}
+        open={selectedInvoice !== null}
+        onClose={() => setSelectedInvoice(null)}
+        onTransition={transitionStatus}
+        isUpdating={updateInvoice.isPending}
+      />
     </>
   )
 }

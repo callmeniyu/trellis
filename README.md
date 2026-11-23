@@ -1,174 +1,165 @@
-# Vital Admin Template
+# Trellis — Modern SaaS Administration Platform
 
-Vital Admin is a **free, open-source React admin template** built with **TypeScript** and **Vite**. It provides a production-oriented foundation for **responsive admin dashboards**, SaaS applications, CRM systems, analytics platforms, ecommerce dashboards, and internal tools.
+Trellis is a polished, fully functional, frontend-only SaaS administration application built with **React 19**, **strict TypeScript**, and **Vite**.
 
-Unlike templates that hard-wire their UI to fake data, Vital Admin follows a backend-oriented architecture: every feature talks to the API through its own service module, so you can replace the bundled mock API with your real backend **without rewriting the UI**.
+Engineered with a clean, premium **white theme** across every view, Trellis provides an executive-ready foundation for dashboards, CRM, customer billing, product catalogs, and analytics platforms.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+Every screen operates immediately after `npm install && npm run dev` using an in-process mock server powered by **MSW v2** with deterministic seed data and automatic browser local storage persistence.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-8-a855f7.svg)](https://vite.dev/)
 
-**[Try the live demo](https://vital-admin-template.vercel.app/)**
+---
 
-## Screenshots
+## Key Features
 
-![Vital Admin responsive React admin dashboard](./preview.png)
+- **Executive Dashboard** — Key performance indicators with sparklines, monthly revenue trends, recent orders table, inventory distribution donut chart, quick actions, and live workspace activity audit feed.
+- **User Management** — Full directory with search, filtering by role and status, sorting, pagination, user detail pages, creation/editing forms, and delete confirmation dialogs with email uniqueness validation.
+- **Product Catalog** — Complete inventory CRUD with SKU formatting, category classification, price formatting, stock status indicators, and detail views.
+- **Order Management** — Customer transactions with line item calculations, payment statuses, fulfillment statuses, and state transitions.
+- **Project Tracking** — Project milestones, progress bars (0–100%), client attribution, target dates, and status transitions.
+- **Invoices & Billing** — Billing ledger with amount calculations, customer linking, due dates, modal detail inspection, and lifecycle status transitions (`draft` → `sent` → `paid` / `cancelled`).
+- **Data-Driven Analytics** — Synchronized 7-day, 30-day, and 90-day time horizons with responsive SVG area, bar, and donut charts computed from real database records.
+- **Notifications** — Dropdown menu panel with real-time unread badges, mark-as-read, and mark-all-as-read capabilities.
+- **Workspace Settings** — Profile updates, table pagination preferences, compact layout toggle, email digest preferences, and interactive demonstration data reset with confirmation.
+- **White-Only Design System** — Unified design tokens ensuring high contrast, clean typography, visible borders, and zero dark-theme clutter.
 
-The screenshot above shows the dashboard home: KPI cards with sparklines, charts, a program overview, and the collapsible sidebar navigation — all theme-aware and responsive from desktop down to mobile.
+---
 
-## Live Demo
+## Demonstration Credentials
 
-A fully working deployment runs at **https://vital-admin-template.vercel.app/** using the built-in mock API.
+Trellis includes pre-configured local demonstration credentials for easy access:
 
-Sign in with the seeded demo account shown on the login screen (`admin@vital.dev` / `admin123`). No environment variables or backend required.
+| Role        | Email                  | Password         | Notes                          |
+| ----------- | ---------------------- | ---------------- | ------------------------------ |
+| **Admin**   | `admin@trellis.demo`   | `TrellisDemo123` | Full administrative privileges |
+| **Manager** | `manager@trellis.demo` | `manager123`     | Management role                |
 
-## Features
+On the login page (`/login`), click **"Use Demo"** to automatically fill the credentials.
 
-- **Dashboard** — KPI cards with sparklines, revenue charts, activity feed, quick actions, calendar widget
-- **Users** — searchable/sortable/paginated list, create & edit dialog, delete confirmation, detail page
-- **Products** — catalog CRUD with categories, inventory badges, price formatting
-- **Orders** — fulfillment + payment status management on a detail page with line items and totals
-- **Projects & invoices** — progress tracking plus invoice status transitions
-- **Analytics** — URL-synced date ranges, per-metric deltas, area/bar/donut charts
-- **Notifications** — dropdown panel with unread state and mark-as-read
-- **Auth scaffolding** — session provider, protected routes, global 401 handling, role-aware UI
-- **Settings** — profile form with server-side field errors, light/dark/system theme picker
-- **Mock API** — MSW-powered server with seeded data, shared Zod contracts, realistic error envelopes
+---
 
 ## Tech Stack
 
-| Concern      | Choice                                       |
-| ------------ | -------------------------------------------- |
-| Build        | Vite                                         |
-| UI           | React 19, plain CSS with design tokens       |
-| Routing      | react-router v7 (lazy routes, breadcrumbs)   |
-| Server state | TanStack Query v5                            |
-| Forms        | Custom `useForm` hook + Zod schemas          |
-| Charts       | Hand-rolled SVG (zero chart dependencies)    |
-| Mock API     | MSW v2 with a seeded JSON database           |
-| Validation   | Zod v4 (shared by forms **and** mock server) |
-| Testing      | Vitest + Testing Library + msw/node          |
+| Layer               | Technology                                   | Notes                                                                |
+| ------------------- | -------------------------------------------- | -------------------------------------------------------------------- |
+| **Runtime**         | React 19                                     | StrictMode enabled                                                   |
+| **Language**        | TypeScript (~6.0)                            | Strict mode, verbatimModuleSyntax, erasableSyntaxOnly                |
+| **Build & Tooling** | Vite 8                                       | Hot module reloading, optimized production bundling                  |
+| **Styling**         | Plain CSS + Semantic Tokens                  | Pure white theme palette (`tokens.css`), zero CSS-in-JS dependencies |
+| **Routing**         | React Router v7                              | Lazy-loaded pages, breadcrumb tracking                               |
+| **Server State**    | TanStack Query v5                            | Query caching, invalidation, mutation tracking                       |
+| **Forms & Schema**  | Custom `useForm` + Zod v4                    | Unified request validation contracts shared across client and mock   |
+| **Charts**          | Custom SVG Components                        | Zero external charting library; fully responsive via ResizeObserver  |
+| **Mock Engine**     | MSW v2 (`msw/browser` + in-process dispatch) | Deterministic JSON database with browser localStorage persistence    |
+| **Icons**           | Lucide React                                 | Consistent SVG icon set                                              |
+| **Testing**         | Vitest 4 + Testing Library + MSW Node        | Unit, component, and end-to-end service integration tests            |
 
-No UI framework, no CSS framework, no form library, no chart library — every layer is small enough to read and own.
+---
 
-## Architecture
+## Architecture & Data Flow
 
-The differentiator of this React admin panel starter is its strict, one-directional layering:
-
-```
-Component → Hook → Service → API Client → Mock API (or your real backend)
-```
-
-- **Components** never import mock data or call HTTP directly.
-- **Hooks** wrap TanStack Query for caching, invalidation, and optimistic updates.
-- **Services** are the only place a feature touches HTTP.
-- **Zod schemas** validate request payloads on both the form and the (mock) server, so client and backend share one contract.
-
-Because the last hop behind the API client is disposable, connecting your production API is a configuration change, not a rewrite.
-
-## Mock API
-
-The bundled mock server (MSW v2 handlers) seeds users, products, orders, projects, invoices, notifications, and analytics so every page works out of the box — locally (`npm run dev`), in `npm run preview`, and on the [hosted demo](https://vital-admin-template.vercel.app/dashboard). Requests are resolved **in-process** (no Service Worker), so static hosts like Vercel never need a real backend. It supports filtering, sorting, pagination, search, auth tokens, latency simulation, and consistent error responses:
-
-```jsonc
-{
-  "error": {
-    "code": "validation_error",
-    "message": "Please fix the highlighted fields.",
-    "fields": { "email": "A user with this email already exists." },
-  },
-}
-```
-
-## Backend Integration
-
-Replacing the mock API takes three steps:
-
-1. **Point the client at your backend** — set `VITE_API_URL=https://your-api.com` and `VITE_ENABLE_MOCK_API=false`.
-2. **Match the response contract** (or adapt the services):
-   - Lists: `{ "data": [...], "meta": { "page", "pageSize", "total", "totalPages" } }`
-   - Single resources: `{ "data": { ... } }`
-   - Errors: `{ "code", "message", "fields"? }`
-   - Auth: `POST /auth/login` → `{ user, token }`, then `Authorization: Bearer <token>`
-3. **Delete the mock layer when confident** — remove `src/data/mock-server/`, `src/data/db/`, `public/mockServiceWorker.js`, and the `enableMocking()` block in `src/main.tsx`.
-
-Request validation lives in `src/models/schemas.ts`; a real backend should enforce the same constraints. For authentication, swap the four calls in `src/services/auth/auth.service.ts` for your identity provider — the session provider, route guards, and 401 handling stay untouched.
-
-## Project Structure
+Trellis adheres to strict unidirectional layering:
 
 ```
-src/
-├── app/                  # Providers, router, guards
-├── components/
-│   ├── ui/               # Design-system primitives (Button, Dialog, Table…)
-│   ├── layout/           # AdminLayout, Sidebar, menus, PageHeader
-│   ├── charts/           # Dependency-free SVG charts
-│   └── …                 # Toasts, badges, form helpers
-├── config/               # Runtime config, navigation registry
-├── data/
-│   ├── db/               # Seeded JSON records (generated — do not hand-edit)
-│   └── mock-server/      # MSW handlers + in-memory database
-├── features/             # One folder per domain, e.g.:
-│   └── users/
-│       ├── users.service.ts    # The ONLY file that talks HTTP
-│       ├── hooks/use-users.ts  # TanStack Query hooks
-│       ├── components/         # Feature-specific components
-│       └── pages/              # Route-level pages
-├── hooks/                # Cross-feature hooks (useForm, debounce…)
-├── lib/                  # Pure helpers (format, errors, query keys)
-├── models/               # Types + Zod request schemas (shared contracts)
-├── services/             # API client, auth service, storage
-├── styles/               # Design tokens + global CSS
-└── types/                # Generic API types (Paginated, ListQuery…)
+UI Component → Custom Hook → Feature Service → API Client → MSW Mock Handler → Browser Persistence
 ```
 
-## Installation
+1. **Components** never communicate directly with HTTP or mock database files.
+2. **Hooks** manage asynchronous server state, caching, and cache invalidation via TanStack Query.
+3. **Services** (`<domain>.service.ts`) define the boundary for HTTP operations.
+4. **Zod Schemas** (`src/models/schemas.ts`) validate request payloads on both form inputs and mock handlers.
+5. **Mock Server** resolves requests in-process without requiring a live Service Worker or server runtime, making it 100% compatible with static hosting environments.
+
+---
+
+## Data Persistence & Reset
+
+- **Automatic Browser Persistence:** Changes created during a session (adding a user, editing a product, updating order or invoice status) are automatically persisted to the browser's `localStorage` (`trellis.mock.db`).
+- **Corruption Recovery:** If stored data is corrupted or invalid, Trellis recovers gracefully by restoring pristine seed data without crashing.
+- **Isolated Storage:** Trellis operates strictly within its own storage keys (`trellis.*`), ensuring no collision with unrelated storage items.
+- **One-Click Reset:** In **Settings → Demo Data Management**, clicking **"Reset Demo Data"** clears custom mutations and restores default demonstration seeds after user confirmation.
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+
+### Installation
 
 ```bash
-git clone https://github.com/Miftah-Fentaw/React-admin-template.git
-cd React-admin-template
+# Clone the repository
+git clone <repository-url>
+cd Trellis
+
+# Install dependencies
 npm install
+
+# Start development server
+npm run dev
 ```
 
-Then start the dev server:
+Visit `http://localhost:5173` to explore Trellis.
+
+---
+
+## Verification & Scripts
+
+| Command             | Description                                       |
+| ------------------- | ------------------------------------------------- |
+| `npm run dev`       | Starts the local development server               |
+| `npm run build`     | Executes typecheck (`tsc -b`) and Vite build      |
+| `npm run typecheck` | Runs TypeScript compiler across all project files |
+| `npm run lint`      | Runs ESLint to verify code quality standards      |
+| `npm run test:run`  | Executes the complete Vitest automated test suite |
+| `npm run preview`   | Serves the production build locally               |
+| `npm run seed`      | Deterministically regenerates mock JSON databases |
+| `npm run format`    | Formats codebase using Prettier                   |
+
+---
+
+## Static Deployment
+
+Trellis is built to deploy seamlessly on static web hosts such as Vercel, Netlify, GitHub Pages, or Cloudflare Pages.
+
+Because the mock API runs in-process within the client bundle:
+
+- No server-side environment variables are required.
+- No external backend or database connections are needed.
+- `vercel.json` includes SPA rewrites (`/(.*) -> /index.html`) so refreshing nested routes functions correctly.
+
+To build for production:
 
 ```bash
-npm run dev      # http://localhost:5173
+npm run build
+npm run preview
 ```
 
-## Development
+---
 
-| Script              | What it does                                 |
-| ------------------- | -------------------------------------------- |
-| `npm run dev`       | Start the dev server                         |
-| `npm run build`     | Type-check then production build             |
-| `npm run preview`   | Preview the production build                 |
-| `npm run lint`      | ESLint                                       |
-| `npm run typecheck` | `tsc -b`                                     |
-| `npm run format`    | Prettier write                               |
-| `npm run test`      | Vitest in watch mode                         |
-| `npm run test:run`  | Vitest once (CI)                             |
-| `npm run seed`      | Regenerate the mock database (`src/data/db`) |
+## Replacing the Mock Backend
 
-See `.env.example` for runtime configuration (`VITE_API_URL`, `VITE_ENABLE_MOCK_API`).
+When you are ready to connect Trellis to a live backend:
 
-## Testing
+1. Update `.env`:
+   ```bash
+   VITE_API_URL=https://api.yourdomain.com
+   VITE_ENABLE_MOCK_API=false
+   ```
+2. Ensure your backend matches the standard envelope structure:
+   - Lists: `{ "data": [...], "meta": { "page", "pageSize", "total", "totalPages" } }`
+   - Single entities: `{ "data": { ... } }`
+   - Errors: `{ "code": string, "message": string, "fields"?: Record<string, string> }`
+3. Delete `src/data/mock-server/` when ready — the UI and query hooks will continue functioning unchanged.
 
-- **Unit** — pure helpers and schemas (`tests/*.test.ts`)
-- **Components** — Testing Library (`tests/Button.test.tsx`)
-- **Services** — real MSW handlers under `msw/node`, pinning the API contract (`tests/users.service.test.ts`)
-
-Run everything with `npm run test:run`.
-
-## Deployment
-
-The template deploys anywhere that serves static assets with SPA fallback routing. A `vercel.json` with the required rewrites is included, so `vercel deploy` works out of the box. Set your real API URL via `VITE_API_URL` at build time once you move past the mock API.
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](./CONTRIBUTING.md) for local setup, verification gates, and pull-request conventions.
+---
 
 ## License
 
-[MIT](./LICENSE) — free for personal and commercial use.
+This project is licensed under the [MIT License](./LICENSE). Original copyright notice preserved in accordance with license requirements.

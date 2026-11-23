@@ -1,6 +1,16 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowLeft, BarChart3, Database, Eye, EyeOff, LayoutDashboard, ShieldCheck } from 'lucide-react'
+import {
+  ArrowLeft,
+  BarChart3,
+  CheckCircle2,
+  Database,
+  Eye,
+  EyeOff,
+  FolderKanban,
+  LayoutDashboard,
+  Sparkles,
+} from 'lucide-react'
 import { appConfig } from '@/config/app'
 import { loginSchema } from '@/models/schemas'
 import { useForm, validate } from '@/hooks/use-form'
@@ -8,38 +18,38 @@ import { useAuth } from '@/app/providers/AuthProvider'
 import { getUserMessage } from '@/lib/errors'
 import { Button } from '@/components/ui/Button'
 import { Checkbox, Field, Input } from '@/components/ui/Input'
+import { TrellisLogo } from '@/components/ui/TrellisLogo'
 
 interface LoginValues {
   email: string
   password: string
 }
 
-const PANEL_POINTS = [
+const HIGHLIGHT_POINTS = [
   {
     icon: LayoutDashboard,
-    title: 'Working dashboard',
-    body: 'KPIs, charts, and lists run against the bundled mock API.',
+    title: 'Complete SaaS Administration',
+    body: 'Data-driven overview, customer transactions, inventory and project tracking.',
   },
   {
     icon: Database,
-    title: 'Swap the backend later',
-    body: 'Every feature talks HTTP only through its service module.',
+    title: 'In-Process Mock Engine',
+    body: 'Fully functional MSW mock API with seeded data and local browser persistence.',
   },
   {
-    icon: ShieldCheck,
-    title: 'Auth you can replace',
-    body: 'This page is the template. Point login at your identity provider.',
+    icon: FolderKanban,
+    title: 'CRUD Workflows & Transitions',
+    body: 'Search, filter, sort, create, update, and manage statuses across all domains.',
   },
   {
     icon: BarChart3,
-    title: 'Ready-made screens',
-    body: 'Users, products, orders, invoices, and analytics ship complete.',
+    title: 'Data-Driven Analytics',
+    body: '7-day, 30-day and 90-day performance trends rendered with responsive charts.',
   },
 ] as const
 
 /**
- * Public sign-in page. Credentials are validated with the same Zod schema the
- * mock server enforces. Replace `authService.login` to wire real providers.
+ * Trellis demonstration login screen.
  */
 export function LoginPage() {
   const { login } = useAuth()
@@ -48,7 +58,7 @@ export function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
   const [remember, setRemember] = useState(true)
-  const [resetHint, setResetHint] = useState(false)
+  const [copiedDemo, setCopiedDemo] = useState(false)
 
   const form = useForm<LoginValues, { email?: string; password?: string }>({
     email: '',
@@ -81,7 +91,11 @@ export function LoginPage() {
     form.setValues({ email, password })
     form.setErrors({})
     setFormError(null)
+    setCopiedDemo(true)
+    setTimeout(() => setCopiedDemo(false), 2000)
   }
+
+  const demoAccount = appConfig.demoAccounts[0]
 
   return (
     <div className="login-page">
@@ -92,21 +106,72 @@ export function LoginPage() {
             Back to landing
           </Link>
 
-          <div className="login-card__brand">
-            <span className="login-card__mark" aria-hidden="true">
-              V
-            </span>
-            <span className="login-card__text-logo" aria-label="Vital Admin">
-              <span className="login-card__text-logo-brand">Vital</span>{' '}
-              <span className="login-card__text-logo-sub">Admin</span>
-            </span>
+          <div style={{ marginBottom: 20 }}>
+            <TrellisLogo size={36} subtitle="Platform" />
           </div>
 
-          <h1 className="login-card__title">Sign in to your workspace</h1>
+          <h1 className="login-card__title">Sign in to Trellis</h1>
           <p className="login-card__subtitle">
-            Template auth screen — use a demo account, or connect your own
-            provider in <code>auth.service.ts</code>.
+            Welcome back. Sign in with the demo account to access your workspace.
           </p>
+
+          {demoAccount && (
+            <div
+              style={{
+                marginBottom: 20,
+                padding: '12px 14px',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--subtle)',
+                border: '1px solid var(--border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12,
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    display: 'block',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    color: 'var(--primary)',
+                  }}
+                >
+                  Demo Credentials
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.82rem',
+                    fontFamily: 'var(--font-mono)',
+                    color: 'var(--foreground)',
+                  }}
+                >
+                  {demoAccount.email} &bull; {demoAccount.password}
+                </span>
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => fillDemo(demoAccount.email, demoAccount.password)}
+              >
+                {copiedDemo ? (
+                  <>
+                    <CheckCircle2 size={13} style={{ color: 'var(--success)' }} />
+                    Filled!
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={13} style={{ color: 'var(--primary)' }} />
+                    Use Demo
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
 
           {formError && (
             <div role="alert" className="alert alert--destructive login-error">
@@ -121,7 +186,7 @@ export function LoginPage() {
                 name="email"
                 type="email"
                 autoComplete="email"
-                placeholder="you@company.com"
+                placeholder="admin@trellis.demo"
                 value={form.values.email}
                 invalid={Boolean(form.errors.email)}
                 aria-describedby={form.errors.email ? 'email-error' : undefined}
@@ -171,63 +236,35 @@ export function LoginPage() {
                 checked={remember}
                 onChange={(event) => setRemember(event.target.checked)}
               />
-              <button
-                type="button"
-                className="login-forgot"
-                onClick={() => setResetHint(true)}
-              >
-                Forgot password?
-              </button>
+              <span className="text-xs text-muted">Local demonstration</span>
             </div>
 
-            {resetHint && (
-              <p className="login-reset-hint" role="status">
-                Password reset is a stub in this template. Wire it to your identity provider.
-              </p>
-            )}
-
             <Button type="submit" variant="primary" isLoading={form.submitting}>
-              Sign in
+              Sign in to Dashboard
             </Button>
           </form>
 
-          {appConfig.enableMockApi && (
-            <div className="login-demo">
-              <p className="login-demo__title">Try a demo account</p>
-              <div className="login-demo__grid">
-                {appConfig.demoAccounts.map((account) => (
-                  <button
-                    key={account.email}
-                    type="button"
-                    className="login-demo__card"
-                    onClick={() => fillDemo(account.email, account.password)}
-                  >
-                    <span className="login-demo__role">{account.role}</span>
-                    <span className="login-demo__credentials">{account.email}</span>
-                    <span className="login-demo__hint">Click to fill</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <p className="login-card__skip">
-            Exploring the template?{' '}
-            <Link to="/dashboard">Continue to dashboard</Link>
+          <p className="login-card__skip" style={{ marginTop: 24 }}>
+            Direct demo entry?{' '}
+            <Link to="/dashboard" style={{ fontWeight: 600 }}>
+              Continue to dashboard &rarr;
+            </Link>
           </p>
         </div>
       </div>
 
-      <aside className="login-page__right" aria-label="Why Vital Admin">
+      <aside className="login-page__right" aria-label="Trellis overview">
         <div className="login-page__panel">
-          <p className="login-page__eyebrow">Open-source admin template</p>
-          <h2 className="login-page__overlay-title">Ship a real dashboard, then swap the API.</h2>
+          <p className="login-page__eyebrow">Interactive SaaS Administration</p>
+          <h2 className="login-page__overlay-title">
+            Enterprise administration, engineered entirely in the frontend.
+          </h2>
           <p className="login-page__overlay-desc">
-            Sign-in, session restore, and every management screen already talk to a
-            mock backend. Keep the UI. Replace the last hop.
+            Explore a cohesive admin suite built with React 19, strict TypeScript, and an
+            in-process mock server with persistent browser storage.
           </p>
           <ul className="login-page__features">
-            {PANEL_POINTS.map((point) => (
+            {HIGHLIGHT_POINTS.map((point) => (
               <li key={point.title} className="login-page__feature">
                 <span className="login-page__feature-icon">
                   <point.icon size={18} aria-hidden="true" />

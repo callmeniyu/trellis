@@ -83,6 +83,7 @@ export const usersHandlers = [
       updatedAt: now,
     }
     db.users.unshift(user)
+    db.save()
 
     return HttpResponse.json({ data: user }, { status: 201 })
   }),
@@ -131,6 +132,7 @@ export const usersHandlers = [
     }
 
     Object.assign(user, parsed.data, { updatedAt: new Date().toISOString() })
+    db.save()
 
     return HttpResponse.json({ data: user })
   }),
@@ -154,6 +156,7 @@ export const usersHandlers = [
     }
 
     db.users.splice(index, 1)
+    db.save()
 
     return new HttpResponse(null, { status: 204 })
   }),

@@ -119,7 +119,9 @@ class HttpClient {
     try {
       const dispatcher = loadMockDispatcher()
       const mocked = dispatcher
-        ? await (await dispatcher)(new Request(resolveRequestUrl(url), init))
+        ? await (
+            await dispatcher
+          )(new Request(resolveRequestUrl(url), init))
         : undefined
       response = mocked ?? (await fetch(url, init))
     } catch (error) {

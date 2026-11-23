@@ -10,27 +10,19 @@ const ACTION_PAST_TENSE: Record<ActivityEvent['action'], string> = {
   placed_order: 'placed',
 }
 
-/** Maps activity event titles/actions to a CSS color variable for the dot badge. */
 function getDotColor(event: ActivityEvent): string {
-  const title = event.title?.toLowerCase() ?? ''
-  if (title.includes('check-in') || title.includes('enrollment') || title.includes('report')) {
-    return 'var(--chart-1)'
+  switch (event.action) {
+    case 'created':
+    case 'placed_order':
+      return 'var(--primary)'
+    case 'updated':
+      return 'var(--info)'
+    case 'deleted':
+      return 'var(--destructive)'
+    case 'signed_in':
+    default:
+      return 'var(--primary)'
   }
-  if (title.includes('message') || title.includes('schedule') || title.includes('updated')) {
-    return 'var(--chart-2)'
-  }
-  return 'var(--primary-subtle)'
-}
-
-function getDotTextColor(event: ActivityEvent): string {
-  const title = event.title?.toLowerCase() ?? ''
-  if (title.includes('check-in') || title.includes('enrollment') || title.includes('report')) {
-    return '#fff'
-  }
-  if (title.includes('message') || title.includes('schedule') || title.includes('updated')) {
-    return '#fff'
-  }
-  return 'var(--primary-subtle-foreground)'
 }
 
 export function ActivityFeed({ events }: { events: ActivityEvent[] | undefined }) {
@@ -52,6 +44,14 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] | undefined }
     )
   }
 
+  if (events.length === 0) {
+    return (
+      <p className="text-sm text-muted" style={{ padding: '16px 20px' }}>
+        No recent activity recorded.
+      </p>
+    )
+  }
+
   return (
     <ol className="activity-feed">
       {events.map((event) => {
@@ -59,15 +59,15 @@ export function ActivityFeed({ events }: { events: ActivityEvent[] | undefined }
           event.title ??
           `${event.actorName} ${ACTION_PAST_TENSE[event.action]} ${event.target}`
         const dotBg = getDotColor(event)
-        const dotColor = getDotTextColor(event)
+
         return (
           <li key={event.id} className="activity-feed__item">
             <span
               className="activity-feed__dot"
               aria-hidden="true"
-              style={{ background: dotBg, color: dotColor }}
+              style={{ background: dotBg, color: '#ffffff' }}
             >
-              {initials(event.actorName)}
+              {initials(event.actorName || 'User')}
             </span>
             <div className="activity-feed__text">
               <span className="activity-feed__action">{displayTitle}</span>

@@ -271,7 +271,8 @@ export function ProductsPage() {
                             {
                               label: 'View details',
                               icon: <Eye size={14} aria-hidden="true" />,
-                              onSelect: () => navigate(`/dashboard/products/${product.id}`),
+                              onSelect: () =>
+                                navigate(`/dashboard/products/${product.id}`),
                             },
                             {
                               label: 'Edit',

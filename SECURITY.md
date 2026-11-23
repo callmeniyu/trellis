@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Vantage Admin is a template, not a hosted service. Security fixes are applied to the latest `main` branch only. If you are running a fork or an older snapshot, upgrade before reporting or expecting fixes.
+Trellis is an open-source SaaS administration platform. Security fixes are applied to the latest `main` branch only. If you are running a fork or an older snapshot, upgrade before reporting or expecting fixes.
 
 | Version               | Supported |
 | --------------------- | --------- |
@@ -31,10 +31,10 @@ You will receive an acknowledgement within **72 hours**, and we aim to provide r
 
 ## Scope and honest expectations
 
-This project is an **open-source admin UI template with a mock backend**. Please keep the following in mind when assessing severity:
+This project is an **open-source admin UI platform with an in-process mock backend**. Please keep the following in mind when assessing severity:
 
-- The bundled MSW mock API is a development fixture. Its tokens (`mock-token-<userId>`) are opaque strings with no cryptographic meaning, the seeded database lives in plain JSON, and nothing about it is hardened. It must never be exposed publicly or used in production.
-- The demo credentials (`admin@vantage.dev` / `admin123`) exist for exploration and are documented in the README. They are not vulnerabilities.
+- The bundled MSW mock API is a demonstration fixture. Its tokens (`mock-token-<userId>`) are opaque strings with no cryptographic meaning, the seeded database lives in plain JSON and local storage, and nothing about it is hardened. It must never be exposed publicly as a production API.
+- The demo credentials (`admin@trellis.demo` / `TrellisDemo123`) exist for local exploration and are documented in the README. They are not vulnerabilities.
 - Real security posture depends entirely on the backend you replace the mock layer with — authentication, authorization, rate limiting, input validation server-side, TLS, secrets management.
 
 That said, genuine issues in the shipped client code are taken seriously, including but not limited to:

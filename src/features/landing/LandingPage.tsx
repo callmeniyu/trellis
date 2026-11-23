@@ -1,19 +1,18 @@
 import { Link } from 'react-router-dom'
 import {
-  Accessibility,
   ArrowRight,
   BarChart3,
-  Database,
+  CheckCircle2,
+  FolderKanban,
   LayoutDashboard,
-  Moon,
+  Lock,
   Package,
-  ShieldCheck,
+  ReceiptText,
+  Sparkles,
   Users,
   type LucideIcon,
 } from 'lucide-react'
-
-const GITHUB_URL = 'https://github.com/Miftah-Fentaw/React-admin-template'
-const LIVE_DEMO_TO = '/dashboard'
+import { TrellisLogo } from '@/components/ui/TrellisLogo'
 
 interface Feature {
   icon: LucideIcon
@@ -24,92 +23,71 @@ interface Feature {
 const FEATURES: Feature[] = [
   {
     icon: LayoutDashboard,
-    title: 'Complete dashboard',
+    title: 'Executive Dashboard',
     description:
-      'KPI cards with sparklines, revenue charts, activity feeds, and quick actions out of the box.',
+      'Data-driven KPI sparklines, monthly revenue trends, quick action shortcuts, and real-time audit activity feed.',
   },
   {
     icon: Users,
-    title: 'User management',
+    title: 'User Management',
     description:
-      'Searchable, sortable, paginated lists with create/edit dialogs, detail pages, and role-aware UI.',
+      'Searchable, sortable, paginated directory with role-based badges, account creation, editing, and confirmation dialogs.',
   },
   {
     icon: Package,
-    title: 'Products & orders',
+    title: 'Product Catalog',
     description:
-      'Catalog CRUD with inventory states plus order detail pages for fulfillment and payment status.',
+      'Inventory control, category categorization, automated SKU generation, price formatting, and availability tracking.',
+  },
+  {
+    icon: FolderKanban,
+    title: 'Project Tracking',
+    description:
+      'Multi-status initiative management with client tracking, progress percentages, milestone dates, and validation.',
+  },
+  {
+    icon: ReceiptText,
+    title: 'Invoices & Billing',
+    description:
+      'Customer billing records with amount calculations, due dates, modal detail inspection, and status lifecycle transitions.',
   },
   {
     icon: BarChart3,
-    title: 'Analytics',
+    title: 'Data-Driven Analytics',
     description:
-      'URL-synced date ranges with dependency-free SVG area, bar, and donut charts that re-theme automatically.',
-  },
-  {
-    icon: Database,
-    title: 'Mock API included',
-    description:
-      'An MSW-powered mock API with seeded data means every page works before you write a backend — locally and on the live demo.',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Type-safe end to end',
-    description:
-      'Strict TypeScript and Zod schemas shared by forms and the API layer keep the contract honest.',
-  },
-  {
-    icon: Accessibility,
-    title: 'Accessible by default',
-    description:
-      'Focus-trapped dialogs, WAI-ARIA keyboard patterns, sort announcements, and skip links.',
-  },
-  {
-    icon: Moon,
-    title: 'Dark mode',
-    description:
-      'Light, dark, and system themes persist across visits and apply before first paint — no flash.',
+      'Configurable 7-day, 30-day, and 90-day time horizons with responsive SVG area, bar, and donut charts.',
   },
 ]
 
-const USE_CASES = [
-  'Admin dashboards',
-  'SaaS applications',
-  'CRM systems',
-  'Analytics platforms',
-  'Ecommerce dashboards',
-  'Internal tools',
-]
-
-const ARCHITECTURE_LAYERS = [
-  'Component',
-  'Hook',
-  'Service',
-  'API Client',
-  'Mock API',
-  'Mock Data',
+const ARCHITECTURE_STEPS = [
+  { step: '1', title: 'Component Layer', desc: 'UI views and dialogs' },
+  { step: '2', title: 'Query Hooks', desc: 'TanStack Query cache & mutations' },
+  { step: '3', title: 'Feature Service', desc: 'Strict HTTP interface boundary' },
+  { step: '4', title: 'API Client', desc: 'Centralized fetch & error handling' },
+  { step: '5', title: 'MSW Mock Server', desc: 'In-process request interception' },
+  { step: '6', title: 'Browser Storage', desc: 'Persistent local storage state' },
 ]
 
 const FAQ_ITEMS = [
   {
-    question: 'Is Vital Admin really free?',
+    question: 'What is Trellis?',
     answer:
-      'Yes. Vital Admin is MIT licensed open source — clone it, modify it, and ship it, including in commercial projects.',
+      'Trellis is a frontend-only SaaS administration platform built with React 19, TypeScript, Vite, and TanStack Query. It demonstrates a complete, professional administrative experience that runs statically without requiring a backend server.',
   },
   {
-    question: 'Does it work without a backend?',
+    question: 'Does Trellis require a database or backend server to run?',
     answer:
-      'Yes. A mock API built on MSW handlers ships with seeded demo data, so every page works immediately after npm install — including the hosted live demo.',
+      'No. Trellis includes an in-process mock API built on MSW (Mock Service Worker) with deterministic seed data and browser localStorage persistence. Every CRUD action, search, filter, and status update works out of the box.',
   },
   {
-    question: 'How do I connect my own backend?',
+    question: 'Are user changes saved when I refresh the page?',
     answer:
-      'Point VITE_API_URL at your server and set VITE_ENABLE_MOCK_API=false. Because every feature talks to the API only through its service module, your components and hooks stay untouched.',
+      'Yes. Trellis persists data mutations (new users, edited products, updated orders and projects) directly into browser storage. You can restore the original sample data at any time via Settings.',
   },
   {
-    question: 'What is Vital Admin built with?',
+    question: 'Can Trellis be connected to a production backend later?',
     answer:
-      'React 19, strict TypeScript, Vite, React Router v7, TanStack Query v5, Zod v4, MSW v2, and plain CSS design tokens — no UI framework, no form library, no chart library.',
+      'Yes. Trellis is architected with strict layering (Component → Hook → Service → API Client). To connect a real backend, you configure the API base URL and disable mock handlers; the UI and business logic remain untouched.',
   },
 ]
 
@@ -117,19 +95,21 @@ function LandingHeader() {
   return (
     <header className="landing__header">
       <div className="landing__container landing__header-inner">
-        <span className="landing__brand" aria-label="Vital Admin">
-          <span className="landing__brand-name">Vital</span>&nbsp;
-          <span className="landing__brand-sub">Admin</span>
-        </span>
-        <nav aria-label="Landing" className="landing__nav">
+        <TrellisLogo size={32} subtitle="Platform" />
+        <nav aria-label="Landing Navigation" className="landing__nav">
           <a href="#features">Features</a>
           <a href="#architecture">Architecture</a>
-          <a href="#getting-started">Getting started</a>
+          <a href="#demo">Interactive Demo</a>
           <a href="#faq">FAQ</a>
         </nav>
-        <Link to={LIVE_DEMO_TO} className="btn btn--primary btn--sm">
-          Open live demo
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link to="/login" className="btn btn--secondary btn--sm">
+            Sign In
+          </Link>
+          <Link to="/dashboard" className="btn btn--primary btn--sm">
+            Open Demo Dashboard
+          </Link>
+        </div>
       </div>
     </header>
   )
@@ -145,64 +125,122 @@ export function LandingPage() {
       <LandingHeader />
 
       <main id="main">
+        {/* Hero Section */}
         <section className="landing__hero">
           <div className="landing__container">
-            <p className="landing__eyebrow">Open source · MIT licensed</p>
-            <h1 className="landing__title">Free Open-Source React Admin Template</h1>
+            <p className="landing__eyebrow">
+              <Sparkles
+                size={14}
+                aria-hidden="true"
+                style={{ color: 'var(--primary)' }}
+              />
+              Modern SaaS Administration Platform
+            </p>
+            <h1 className="landing__title">
+              Enterprise administration, engineered for the web.
+            </h1>
             <p className="landing__lede">
-              Vital Admin is a free, open-source admin template built with TypeScript and
-              Vite. It gives you a production-oriented React dashboard — users, products,
-              orders, projects, invoices, and analytics — backed by a swappable mock API
-              so every page works before you connect a backend.
+              Trellis delivers a production-grade admin dashboard with full user
+              management, product catalog, orders, projects, invoices, and analytics —
+              backed by an in-process mock server with persistent browser storage.
             </p>
             <div className="landing__actions">
-              <Link to={LIVE_DEMO_TO} className="btn btn--primary btn--lg">
-                Try the live React admin dashboard
+              <Link to="/dashboard" className="btn btn--primary btn--lg">
+                Open Demo Dashboard
                 <ArrowRight size={16} aria-hidden="true" />
               </Link>
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn--secondary btn--lg"
-              >
-                View Vital Admin on GitHub
-              </a>
+              <Link to="/login" className="btn btn--secondary btn--lg">
+                <Lock size={15} aria-hidden="true" />
+                Sign In to Workspace
+              </Link>
             </div>
-            <img
-              src="/preview.png"
-              alt="Vital Admin responsive React admin dashboard showing analytics cards, charts, and a sidebar navigation"
-              width={1920}
-              height={935}
-              loading="lazy"
-              decoding="async"
-              className="landing__preview"
-            />
+
+            {/* Product Preview UI Frame */}
+            <div className="landing__preview-container" style={{ marginTop: 40 }}>
+              <div
+                style={{
+                  background: 'var(--card)',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid var(--border)',
+                  boxShadow: 'var(--shadow-lg)',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Browser-like window top bar */}
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '12px 18px',
+                    borderBottom: '1px solid var(--border)',
+                    backgroundColor: 'var(--subtle)',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: '50%',
+                      backgroundColor: '#ef4444',
+                    }}
+                  />
+                  <span
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: '50%',
+                      backgroundColor: '#f59e0b',
+                    }}
+                  />
+                  <span
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: '50%',
+                      backgroundColor: '#10b981',
+                    }}
+                  />
+                  <span
+                    style={{
+                      marginLeft: 12,
+                      fontSize: '0.75rem',
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--muted-foreground)',
+                      backgroundColor: 'var(--card)',
+                      padding: '2px 12px',
+                      borderRadius: 'var(--radius-xs)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    https://trellis.demo/dashboard
+                  </span>
+                </div>
+                <img
+                  src="/preview.png"
+                  alt="Trellis responsive SaaS administration platform interface preview"
+                  width={1920}
+                  height={935}
+                  loading="eager"
+                  className="landing__preview"
+                  style={{ display: 'block', width: '100%', height: 'auto' }}
+                />
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="landing__section" aria-labelledby="why-vital-admin">
-          <div className="landing__container landing__narrow">
-            <h2 id="why-vital-admin">Why Vital Admin?</h2>
-            <p>
-              Most admin templates hard-wire their UI to fake data. Vital Admin takes the
-              opposite approach: the entire application is built against a service layer,
-              exactly as it would be against your real backend. The result is a React
-              admin panel starter that stays useful long after day one — clone it, explore
-              a fully working dashboard, then swap in your API without rewriting the UI.
-            </p>
-          </div>
-        </section>
-
+        {/* Features Section */}
         <section
           id="features"
           className="landing__section"
           aria-labelledby="features-title"
         >
           <div className="landing__container">
-            <h2 id="features-title">Features</h2>
+            <h2 id="features-title">Core Administration Modules</h2>
             <p className="landing__section-lede">
-              Everything an internal tool needs on day one, wired together and tested.
+              Every workflow necessary for day-to-day operations, crafted with strict
+              TypeScript and accessible UI primitives.
             </p>
             <ul className="landing__features">
               {FEATURES.map(({ icon: Icon, title, description }) => (
@@ -216,155 +254,156 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="landing__section" aria-labelledby="use-cases-title">
-          <div className="landing__container landing__narrow">
-            <h2 id="use-cases-title">Built for Real Applications</h2>
-            <p>
-              Use Vital Admin as the foundation for the tools your team actually runs —
-              any project that needs tables, forms, charts, and authentication
-              scaffolding:
-            </p>
-            <ul className="landing__use-cases">
-              {USE_CASES.map((useCase) => (
-                <li key={useCase}>{useCase}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
+        {/* Architecture Section */}
         <section
           id="architecture"
           className="landing__section landing__section--alt"
           aria-labelledby="architecture-title"
         >
           <div className="landing__container">
-            <h2 id="architecture-title">Mock API Architecture</h2>
+            <h2 id="architecture-title">Frontend-Only Architecture</h2>
             <p className="landing__section-lede">
-              Data flows through clearly separated layers — never directly from UI to mock
-              data.
+              Clean separation of concerns with unidirectional data flow and zero external
+              dependencies.
             </p>
-            <ol
-              className="landing__flow"
-              aria-label="Request flow from component to mock data"
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                gap: 16,
+                margin: '32px 0',
+              }}
             >
-              {ARCHITECTURE_LAYERS.map((layer) => (
-                <li key={layer} className="landing__flow-step">
-                  {layer}
-                  <ArrowRight
-                    size={14}
-                    aria-hidden="true"
-                    className="landing__flow-arrow"
-                  />
-                </li>
+              {ARCHITECTURE_STEPS.map((step) => (
+                <div
+                  key={step.step}
+                  style={{
+                    backgroundColor: 'var(--card)',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-md)',
+                    padding: '18px 16px',
+                    boxShadow: 'var(--shadow-xs)',
+                  }}
+                >
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 26,
+                      height: 26,
+                      borderRadius: '50%',
+                      backgroundColor: 'var(--primary-subtle)',
+                      color: 'var(--primary-subtle-foreground)',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      marginBottom: 10,
+                    }}
+                  >
+                    {step.step}
+                  </span>
+                  <h4
+                    style={{
+                      fontSize: '0.92rem',
+                      fontWeight: 700,
+                      margin: '0 0 4px',
+                      color: 'var(--foreground)',
+                    }}
+                  >
+                    {step.title}
+                  </h4>
+                  <p
+                    style={{
+                      fontSize: '0.8rem',
+                      color: 'var(--muted-foreground)',
+                      margin: 0,
+                    }}
+                  >
+                    {step.desc}
+                  </p>
+                </div>
               ))}
-            </ol>
-            <p className="landing__narrow landing__flow-note">
-              Because components depend only on hooks, and hooks only on services, the
-              last two links in this chain are disposable. Replace them with your real API
-              and nothing above changes.
+            </div>
+            <p
+              className="landing__narrow landing__flow-note"
+              style={{ textAlign: 'center', margin: '0 auto' }}
+            >
+              Because feature modules communicate only through services, components remain
+              completely decoupled from the data provider.
             </p>
           </div>
         </section>
 
-        <section className="landing__section" aria-labelledby="backend-title">
+        {/* Interactive Demo Section */}
+        <section id="demo" className="landing__section" aria-labelledby="demo-title">
           <div className="landing__container landing__narrow">
-            <h2 id="backend-title">Connect Your Own Backend</h2>
-            <ol className="landing__steps">
-              <li>
-                <strong>Point the client at your server.</strong> Set{' '}
-                <code>VITE_API_URL=https://your-api.com</code> and{' '}
-                <code>VITE_ENABLE_MOCK_API=false</code>.
-              </li>
-              <li>
-                <strong>Match the response contract.</strong> Lists return{' '}
-                <code>{'{ data, meta }'}</code>, single resources wrap in{' '}
-                <code>{'{ data }'}</code>, and errors use a shared envelope — documented
-                in the README.
-              </li>
-              <li>
-                <strong>Delete the mock layer.</strong> Remove{' '}
-                <code>src/data/mock-server/</code> when you are confident — the UI does
-                not know it existed.
-              </li>
-            </ol>
-            <p>
-              The full integration guide lives in the{' '}
-              <a
-                href={`${GITHUB_URL}#replacing-the-mock-backend`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                README section on replacing the mock backend
-              </a>
-              .
+            <h2 id="demo-title">Interactive Demonstration</h2>
+            <p
+              style={{
+                lineHeight: 1.6,
+                color: 'var(--muted-foreground)',
+                fontSize: '1.02rem',
+                marginBottom: 24,
+              }}
+            >
+              Trellis functions out-of-the-box in any standard web browser or static
+              hosting environment. Experience real-time search, multi-column sorting,
+              pagination, record creation, updates, and deletion.
             </p>
-          </div>
-        </section>
-
-        <section
-          className="landing__section landing__section--alt"
-          aria-labelledby="responsive-title"
-        >
-          <div className="landing__container landing__narrow">
-            <h2 id="responsive-title">Responsive React Dashboard</h2>
-            <p>
-              The layout adapts from wide desktop monitors down to phones: the sidebar
-              collapses, tables stay readable, dialogs remain usable, and touch targets
-              keep their size. Every screen ships responsive by default, so your admin
-              panel works wherever your team opens it.
-            </p>
-          </div>
-        </section>
-
-        <section className="landing__section" aria-labelledby="dark-mode-title">
-          <div className="landing__container landing__narrow">
-            <h2 id="dark-mode-title">Dark Mode</h2>
-            <p>
-              All colors come from semantic CSS custom properties, so light, dark, and
-              system themes are a single token file away. The saved theme is applied
-              before first paint — no flash of the wrong color scheme — and charts
-              re-theme automatically because they read the same tokens.
-            </p>
-          </div>
-        </section>
-
-        <section
-          id="getting-started"
-          className="landing__section landing__section--alt"
-          aria-labelledby="getting-started-title"
-        >
-          <div className="landing__container landing__narrow">
-            <h2 id="getting-started-title">Getting Started</h2>
-            <pre>
-              <code>{`git clone https://github.com/Miftah-Fentaw/React-admin-template.git
-cd React-admin-template
-npm install
-npm run dev`}</code>
-            </pre>
-            <p>
-              Open <code>http://localhost:5173</code> and sign in with the seeded demo
-              account <code>admin@vital.dev</code> / <code>admin123</code>. No environment
-              variables required.
-            </p>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+                backgroundColor: 'var(--subtle)',
+                padding: '20px 24px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border)',
+                marginBottom: 28,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
+                <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>
+                  Pre-configured demo account: <code>admin@trellis.demo</code> /{' '}
+                  <code>TrellisDemo123</code>
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
+                <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>
+                  Deterministic initial seed dataset with 44 users, 33 products, 72
+                  orders, and 30 projects
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <CheckCircle2 size={18} style={{ color: 'var(--success)' }} />
+                <span style={{ fontSize: '0.9rem', color: 'var(--foreground)' }}>
+                  State persistence across page reloads with one-click data reset in
+                  Settings
+                </span>
+              </div>
+            </div>
             <div className="landing__actions landing__actions--start">
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn--primary"
-              >
-                View Vital Admin on GitHub
-              </a>
-              <Link to={LIVE_DEMO_TO} className="btn btn--secondary">
-                Try the live demo
+              <Link to="/dashboard" className="btn btn--primary btn--lg">
+                Launch Trellis Dashboard
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+              <Link to="/login" className="btn btn--secondary btn--lg">
+                Sign In Screen
               </Link>
             </div>
           </div>
         </section>
 
-        <section id="faq" className="landing__section" aria-labelledby="faq-title">
+        {/* FAQ Section */}
+        <section
+          id="faq"
+          className="landing__section landing__section--alt"
+          aria-labelledby="faq-title"
+        >
           <div className="landing__container landing__narrow">
-            <h2 id="faq-title">FAQ</h2>
+            <h2 id="faq-title">Frequently Asked Questions</h2>
             {FAQ_ITEMS.map(({ question, answer }) => (
               <div key={question} className="landing__faq-item">
                 <h3>{question}</h3>
@@ -375,24 +414,20 @@ npm run dev`}</code>
         </section>
       </main>
 
+      {/* Footer */}
       <footer className="landing__footer">
         <div className="landing__container landing__footer-inner">
-          <p>
-            Vital Admin — a free, open-source React admin template built with TypeScript
-            and Vite.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <TrellisLogo size={24} subtitle="Admin" />
+            <span style={{ fontSize: '0.85rem', color: 'var(--muted-foreground)' }}>
+              &copy; {new Date().getFullYear()} Trellis. Released under the MIT License.
+            </span>
+          </div>
           <nav aria-label="Footer" className="landing__footer-nav">
-            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-              Source code on GitHub
-            </a>
-            <a
-              href={`${GITHUB_URL}/blob/main/LICENSE`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              MIT License
-            </a>
-            <Link to={LIVE_DEMO_TO}>Live demo</Link>
+            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/login">Sign In</Link>
+            <a href="#features">Features</a>
+            <a href="#architecture">Architecture</a>
           </nav>
         </div>
       </footer>

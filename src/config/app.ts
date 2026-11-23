@@ -10,7 +10,7 @@ export function resolveApiBaseUrl(value: string | undefined): string {
 }
 
 export const appConfig = {
-  name: 'Vital Admin',
+  name: 'Trellis',
   version: '1.0.0',
 
   /**
@@ -30,13 +30,12 @@ export const appConfig = {
    * the login screen. Irrelevant once the mock API is disabled.
    */
   demoAccounts: [
-    { email: 'admin@vital.dev', password: 'admin123', role: 'Admin' },
-    { email: 'manager@vital.dev', password: 'manager123', role: 'Manager' },
+    { email: 'admin@trellis.demo', password: 'TrellisDemo123', role: 'Admin' },
   ],
 } as const
 
 export const STORAGE_KEYS = {
-  authSession: 'vital.auth.session',
-  theme: 'vital.theme',
-  sidebarCollapsed: 'vital.sidebar.collapsed',
+  authSession: 'trellis.auth.session',
+  sidebarCollapsed: 'trellis.sidebar.collapsed',
+  mockDb: 'trellis.mock.db',
 } as const

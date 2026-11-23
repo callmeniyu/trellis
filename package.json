@@ -1,5 +1,6 @@
 {
-  "name": "vital-admin",
+  "name": "trellis",
+  "description": "Trellis — Modern SaaS Administration Platform",
   "private": true,
   "version": "1.0.0",
   "type": "module",

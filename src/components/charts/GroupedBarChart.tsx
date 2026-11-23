@@ -42,9 +42,7 @@ export function GroupedBarChart({
 
   const innerWidth = Math.max(width - PADDING.left - PADDING.right, 0)
   const innerHeight = height - PADDING.top - PADDING.bottom
-  const maxValue = niceMax(
-    Math.max(...data.flatMap((d) => [d.primary, d.secondary]), 1),
-  )
+  const maxValue = niceMax(Math.max(...data.flatMap((d) => [d.primary, d.secondary]), 1))
 
   const slot = innerWidth / data.length
   const pairWidth = Math.min(slot * 0.7, 36)
@@ -81,7 +79,11 @@ export function GroupedBarChart({
                 fontSize={10}
                 fill="var(--chart-axis)"
               >
-                {ratio === 0 ? formatValue(maxValue) : ratio === 1 ? '0' : formatValue(maxValue * (1 - ratio))}
+                {ratio === 0
+                  ? formatValue(maxValue)
+                  : ratio === 1
+                    ? '0'
+                    : formatValue(maxValue * (1 - ratio))}
               </text>
             </g>
           )

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useEffect, useState, type FormEvent } from 'react'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, Search, RefreshCw, Settings } from 'lucide-react'
 import { STORAGE_KEYS } from '@/config/app'
 import { Sidebar } from './Sidebar'
-import { ThemeMenu, UserMenu } from './UserMenu'
+import { UserMenu } from './UserMenu'
 import { NotificationsMenu } from './NotificationsMenu'
 
 export function AdminLayout() {
@@ -11,7 +11,9 @@ export function AdminLayout() {
     () => window.localStorage.getItem(STORAGE_KEYS.sidebarCollapsed) === 'true',
   )
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     setMobileOpen(false)
@@ -27,6 +29,12 @@ export function AdminLayout() {
       }
       return next
     })
+  }
+
+  const handleSearchSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) return
+    navigate(`/dashboard/users?search=${encodeURIComponent(searchQuery.trim())}`)
   }
 
   return (
@@ -54,24 +62,39 @@ export function AdminLayout() {
             <Menu size={18} aria-hidden="true" />
           </button>
 
-          <div className="topbar__search" role="search">
+          <form className="topbar__search" role="search" onSubmit={handleSearchSubmit}>
             <Search size={14} className="topbar__search-icon" aria-hidden="true" />
             <input
               type="search"
-              placeholder="Search placeholder"
+              placeholder="Search users, orders, projects…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="topbar__search-input"
               aria-label="Search"
             />
-          </div>
+          </form>
 
           <div className="topbar__actions">
-            <button type="button" className="icon-btn" aria-label="Refresh" onClick={() => window.location.reload()}>
+            <button
+              type="button"
+              className="icon-btn"
+              aria-label="Refresh application"
+              title="Refresh"
+              onClick={() => window.location.reload()}
+            >
               <RefreshCw size={16} aria-hidden="true" />
             </button>
-            <ThemeMenu />
-            <button type="button" className="icon-btn" aria-label="Settings" onClick={() => {}}>
+
+            <button
+              type="button"
+              className="icon-btn"
+              aria-label="Settings"
+              title="Settings"
+              onClick={() => navigate('/dashboard/settings')}
+            >
               <Settings size={16} aria-hidden="true" />
             </button>
+
             <span className="topbar__divider" aria-hidden="true" />
             <NotificationsMenu />
             <UserMenu />

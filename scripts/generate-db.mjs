@@ -131,7 +131,7 @@ const EMAIL_DOMAINS = [
   'gmail.com',
   'outlook.com',
   'proton.me',
-  'vantagehq.dev',
+  'trellis.demo',
   'northwind.io',
   'brightlab.co',
   'orbitworks.app',
@@ -165,22 +165,22 @@ function generateUsers() {
     {
       id: 'usr_0001',
       name: 'Alex Morgan',
-      email: 'admin@vantage.dev',
+      email: 'admin@trellis.demo',
       role: 'admin',
       status: 'active',
     },
     {
       id: 'usr_0002',
       name: 'Jordan Lee',
-      email: 'manager@vantage.dev',
+      email: 'manager@trellis.demo',
       role: 'manager',
       status: 'active',
     },
   ]
 
   const users = [...pinned]
-  usedEmails.add('admin@vantage.dev')
-  usedEmails.add('manager@vantage.dev')
+  usedEmails.add('admin@trellis.demo')
+  usedEmails.add('manager@trellis.demo')
 
   let i = users.length + 1
   while (users.length < 44 && i < 200) {
@@ -497,8 +497,7 @@ function generateInvoices() {
       number: `INV-2026-${String(n + 1).padStart(4, '0')}`,
       customerName,
       customerEmail: `${slugifyEmail(customerName)}@${pick(EMAIL_DOMAINS)}`,
-      amount:
-        Math.round((120 + rand() * 4800) * 100 - 0.01 + Number.EPSILON) / 100,
+      amount: Math.round((120 + rand() * 4800) * 100 - 0.01 + Number.EPSILON) / 100,
       status,
       issuedAt: daysAgo(issuedDaysAgo),
       dueAt:
@@ -507,8 +506,7 @@ function generateInvoices() {
           : new Date(NOW.getTime() - (issuedDaysAgo - dueDaysAfterIssue) * DAY)
               .toISOString()
               .slice(0, 10),
-      paidAt:
-        status === 'paid' ? daysAgo(Math.max(0, issuedDaysAgo - int(5, 28))) : null,
+      paidAt: status === 'paid' ? daysAgo(Math.max(0, issuedDaysAgo - int(5, 28))) : null,
       createdAt: daysAgo(issuedDaysAgo),
       updatedAt: daysAgo(Math.max(0, issuedDaysAgo - int(0, 10))),
     })

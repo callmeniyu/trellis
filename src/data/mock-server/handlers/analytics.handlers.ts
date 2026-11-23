@@ -5,6 +5,7 @@ import type {
   AnalyticsRange,
 } from '@/models/Analytics'
 import { ANALYTICS_RANGES } from '@/models/Analytics'
+import { db } from '../db'
 import { getAuthUserId, jsonError, latency, unauthorized } from '../utils'
 
 const RANGE_DAYS: Record<AnalyticsRange, number> = {
@@ -14,65 +15,71 @@ const RANGE_DAYS: Record<AnalyticsRange, number> = {
 }
 
 const TOP_PAGES = [
-  { path: '/', base: 920 },
-  { path: '/pricing', base: 610 },
-  { path: '/docs/getting-started', base: 480 },
-  { path: '/blog/launch-week', base: 350 },
-  { path: '/changelog', base: 240 },
+  { path: '/dashboard', base: 980 },
+  { path: '/dashboard/products', base: 640 },
+  { path: '/dashboard/orders', base: 510 },
+  { path: '/dashboard/users', base: 390 },
+  { path: '/dashboard/analytics', base: 260 },
 ]
 
 const TOP_COUNTRIES = [
-  { country: 'United States', share: 32.4 },
-  { country: 'Germany', share: 14.1 },
-  { country: 'United Kingdom', share: 11.8 },
-  { country: 'Japan', share: 8.3 },
-  { country: 'Canada', share: 6.9 },
+  { country: 'United States', share: 34.2 },
+  { country: 'United Kingdom', share: 15.6 },
+  { country: 'Germany', share: 13.4 },
+  { country: 'Japan', share: 8.7 },
+  { country: 'Canada', share: 7.1 },
 ]
 
 /**
- * Deterministic per-day generator — same date always yields the same values,
- * so charts are stable across reloads (like a real analytics backend).
+ * Computes analytics series for the given number of days,
+ * derived directly from the active db orders and database records.
  */
-function dailyValues(date: Date): AnalyticsDailyPoint {
-  const key = date.toISOString().slice(0, 10)
-  let hash = 2166136261
-  for (let i = 0; i < key.length; i++) {
-    hash ^= key.charCodeAt(i)
-    hash = Math.imul(hash, 16777619)
-  }
-  const next = () => {
-    hash = Math.imul(hash ^ (hash >>> 13), 1274126177)
-    return ((hash ^ (hash >>> 16)) >>> 0) / 4294967296
-  }
-
-  const weekday = date.getDay()
-  const weekendDip = weekday === 0 || weekday === 6 ? 0.62 : 1
-  const visitors = Math.round((520 + next() * 380) * weekendDip)
-  const orders = Math.round(visitors * (0.028 + next() * 0.02) * 10) / 10
-  const revenue = Math.round((orders * (78 + next() * 64) + 40 * next()) * 100) / 100
-
-  return {
-    date: key,
-    revenue,
-    orders: Math.max(1, Math.round(orders)),
-    visitors,
-  }
-}
-
-function seriesFor(days: number): AnalyticsDailyPoint[] {
+function buildSeries(days: number, offsetDays = 0): AnalyticsDailyPoint[] {
   const points: AnalyticsDailyPoint[] = []
+  const now = new Date()
+  const activeOrders = db.orders.filter((o) => o.status !== 'cancelled')
+  const avgOrderVal =
+    activeOrders.length > 0
+      ? activeOrders.reduce((s, o) => s + o.total, 0) / activeOrders.length
+      : 85
+
   for (let i = days - 1; i >= 0; i--) {
-    const date = new Date()
-    date.setHours(12, 0, 0, 0)
-    date.setDate(date.getDate() - i)
-    points.push(dailyValues(date))
+    const d = new Date(now)
+    d.setHours(12, 0, 0, 0)
+    d.setDate(d.getDate() - (i + offsetDays))
+    const key = d.toISOString().slice(0, 10)
+
+    const dayOrders = activeOrders.filter((o) => o.placedAt.slice(0, 10) === key)
+    const orderCountFromDb = dayOrders.length
+    const revenueFromDb = dayOrders.reduce((sum, o) => sum + o.total, 0)
+
+    // Baseline calculation to provide continuous realistic activity when date falls outside seeded days
+    const daySeed =
+      (d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate()) % 17
+    const weekday = d.getDay()
+    const weekendDip = weekday === 0 || weekday === 6 ? 0.65 : 1.0
+    const baselineOrders = Math.max(1, Math.round((2 + (daySeed % 4)) * weekendDip))
+    const baselineRevenue = Math.round(baselineOrders * avgOrderVal * 100) / 100
+
+    const finalOrders = orderCountFromDb > 0 ? orderCountFromDb : baselineOrders
+    const finalRevenue =
+      revenueFromDb > 0 ? Math.round(revenueFromDb * 100) / 100 : baselineRevenue
+    const visitors = Math.round(finalOrders * (28 + (daySeed % 15)))
+
+    points.push({
+      date: key,
+      revenue: finalRevenue,
+      orders: finalOrders,
+      visitors,
+    })
   }
+
   return points
 }
 
 export const analyticsHandlers = [
-  http.get('/api/analytics/overview', async ({ request }) => {
-    await latency(250, 550)
+  http.get('*/api/analytics/overview', async ({ request }) => {
+    await latency(200, 450)
     if (!getAuthUserId(request)) return unauthorized()
 
     const url = new URL(request.url)
@@ -87,16 +94,8 @@ export const analyticsHandlers = [
     const range = rangeParam as AnalyticsRange
     const days = RANGE_DAYS[range]
 
-    const series = seriesFor(days)
-
-    // Previous comparable window for delta calculations.
-    const previousSeries: AnalyticsDailyPoint[] = []
-    for (let i = days * 2 - 1; i >= days; i--) {
-      const date = new Date()
-      date.setHours(12, 0, 0, 0)
-      date.setDate(date.getDate() - i)
-      previousSeries.push(dailyValues(date))
-    }
+    const series = buildSeries(days, 0)
+    const previousSeries = buildSeries(days, days)
 
     const sum = (
       points: AnalyticsDailyPoint[],
