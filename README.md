@@ -2,9 +2,9 @@
 
 Trellis is a polished, fully functional, frontend-only SaaS administration application built with **React 19**, **strict TypeScript**, and **Vite**.
 
-Engineered with a clean, premium **white theme** across every view, Trellis provides an executive-ready foundation for dashboards, CRM, customer billing, product catalogs, and analytics platforms.
+Engineered with a clean, semantic design system across every view, Trellis provides an executive-ready foundation for dashboards, CRM, customer billing, product catalogs, and analytics platforms.
 
-Every screen operates immediately after `npm install && npm run dev` using an in-process mock server powered by **MSW v2** with deterministic seed data and automatic browser local storage persistence.
+Every screen operates immediately after `npm install && npm run dev` using an in-process mock server powered by **MSW v2** with deterministic seed data and automatic browser localStorage persistence.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
@@ -15,16 +15,18 @@ Every screen operates immediately after `npm install && npm run dev` using an in
 
 ## Key Features
 
-- **Executive Dashboard** — Key performance indicators with sparklines, monthly revenue trends, recent orders table, inventory distribution donut chart, quick actions, and live workspace activity audit feed.
-- **User Management** — Full directory with search, filtering by role and status, sorting, pagination, user detail pages, creation/editing forms, and delete confirmation dialogs with email uniqueness validation.
+- **Public Landing Page** — SEO-optimized marketing page at `/` with hero, feature overview, architecture diagram, interactive demo section, and FAQ.
+- **Executive Dashboard** (`/dashboard`) — Education-focused redesign featuring KPI cards with inline sparklines (Students, Teachers, Programs), Top Programs donut chart with center label, Total Children stacked area chart (Infant/Toddler/School Age), Program cards with cover images and session details, Revenue bar chart with 1st/2nd biannual period toggle, Messages panel with Add Message CTA, Student list with search/edit/delete actions, Calendar widget (monthly grid, today highlight, event dots, prev/next navigation), and Schedule section with colored date badges — all in a three-column responsive layout.
+- **Analytics** (`/dashboard/analytics`) — URL-synced 7d/30d/90d range selector, KPI cards with period-over-period deltas, revenue/visitors area & bar charts, sessions-by-country donut with legend, and top-pages ranked list with change indicators.
+- **User Management** — Full directory with search, filtering by role and status, multi-column sorting, pagination, user detail pages, creation/editing forms in dialogs, and delete confirmation dialogs with email uniqueness validation.
 - **Product Catalog** — Complete inventory CRUD with SKU formatting, category classification, price formatting, stock status indicators, and detail views.
 - **Order Management** — Customer transactions with line item calculations, payment statuses, fulfillment statuses, and state transitions.
-- **Project Tracking** — Project milestones, progress bars (0–100%), client attribution, target dates, and status transitions.
-- **Invoices & Billing** — Billing ledger with amount calculations, customer linking, due dates, modal detail inspection, and lifecycle status transitions (`draft` → `sent` → `paid` / `cancelled`).
-- **Data-Driven Analytics** — Synchronized 7-day, 30-day, and 90-day time horizons with responsive SVG area, bar, and donut charts computed from real database records.
-- **Notifications** — Dropdown menu panel with real-time unread badges, mark-as-read, and mark-all-as-read capabilities.
-- **Workspace Settings** — Profile updates, table pagination preferences, compact layout toggle, email digest preferences, and interactive demonstration data reset with confirmation.
-- **White-Only Design System** — Unified design tokens ensuring high contrast, clean typography, visible borders, and zero dark-theme clutter.
+- **Project Tracking** — Project milestones, progress bars (0–100%), client attribution, target dates, and status transitions with create/edit/delete dialogs.
+- **Invoices & Billing** — Billing ledger with amount calculations, customer linking, due dates, modal detail inspection, and lifecycle status transitions (`draft` → `sent` → `paid` / `overdue` / `cancelled`).
+- **Notifications** — Topbar dropdown menu panel with real-time unread badges, mark-as-read, and mark-all-as-read capabilities.
+- **Workspace Settings** — Profile updates, table pagination preferences, compact layout toggle, email digest preferences, and interactive demonstration data reset with confirmation dialog.
+- **Design System** — Semantic design tokens (`tokens.css`) supporting light/dark/system themes with zero hardcoded colors, custom SVG icon set (lucide-react), and accessible UI primitives (Dialog, DropdownMenu, Tabs, Table, Pagination, Badge, Avatar, etc.).
+- **Custom Charts** — Zero external charting library; hand-rolled responsive SVG AreaChart, BarChart, and DonutChart components reading colors from `--chart-*` tokens and measuring width via `ResizeObserver`.
 
 ---
 
@@ -159,7 +161,3 @@ When you are ready to connect Trellis to a live backend:
 3. Delete `src/data/mock-server/` when ready — the UI and query hooks will continue functioning unchanged.
 
 ---
-
-## License
-
-This project is licensed under the [MIT License](./LICENSE). Original copyright notice preserved in accordance with license requirements.
